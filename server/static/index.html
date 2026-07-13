@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Gradbot voice</title>
+  <link rel="stylesheet" href="/style.css" />
+  <!--
+    gradbot's browser audio stack, served from the Python package at /static/js.
+    These are plain globals, NOT ES modules — `type="module"` would put
+    SyncedAudioPlayer in a module scope where app.js cannot see it. They must
+    also load before app.js, which constructs the player on first call.
+  -->
+  <script src="/static/js/opus-encoder.js"></script>
+  <script src="/static/js/audio-processor.js"></script>
+  <script src="/static/js/synced-audio-player.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-brand">Gradbot voice</div>
+    <div class="topbar-right">
+      <div id="auth-logged-in" class="auth-pill hidden">
+        <span class="auth-username" id="auth-username"></span>
+        <a id="auth-dashboard-link" href="/dashboard" class="hidden">dashboard</a>
+        <button id="auth-logout" class="link-btn" title="Log out" aria-label="Log out">⎋</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1>Gradbot voice</h1>
+    <p class="intro">
+      Choose who you'd like to speak with.
+    </p>
+
+    <form id="auth-form" class="auth-form hidden">
+      <p class="intro">
+        This is a private beta. Sign in with your email, or enter an invite
+        code to create an account.
+      </p>
+      <label>
+        <span>Email</span>
+        <input id="auth-email-input" type="email" required autocomplete="email"
+               placeholder="you@example.com" />
+      </label>
+      <label>
+        <span>Invite code</span>
+        <input id="auth-invite-input" type="text" autocomplete="off"
+               autocapitalize="off" autocorrect="off" spellcheck="false"
+               placeholder="optional" />
+      </label>
+      <p class="hint">
+        Have an invite code? Enter it to join now. No code? Leave it blank to
+        join the beta waitlist.
+      </p>
+      <button id="auth-submit" type="submit" class="primary">Connect</button>
+      <div id="auth-status" class="status idle"></div>
+    </form>
+
+    <div id="auth-waitlist" class="auth-waitlist hidden"></div>
+
+    <div id="agents" class="agents hidden">loading…</div>
+
+    <button id="hangup-btn" class="secondary hidden">Hang up</button>
+
+    <div id="status" class="status idle hidden">ready</div>
+
+    <p class="note">
+      You'll be asked to allow microphone access. Use headphones if you
+      can — it helps the conversation breathe.
+    </p>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

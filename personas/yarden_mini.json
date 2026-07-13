@@ -1,0 +1,33 @@
+{
+  "agent": {
+    "active": true,
+    "lang": "en",
+    "visibility": "public"
+  },
+  "persona": {
+    "name": "Sophie",
+    "description": "A French woman obsessed about the price of eggs.",
+    "system_prompt_path": "personas/systemprompts/yarden_mini.md",
+    "greeting": "Hi, I'm Sophie. What's your name?"
+  },
+  "llm": {
+    "provider": "openrouter",
+    "model": "meta-llama/llama-4-maverick",
+    "description": "Llama 4 Maverick on OpenRouter"
+  },
+  "tts": {
+    "provider": "gradium",
+    "voice_id": "P4GqVY98hjQSvkiu",
+    "voice_name": "Capucine",
+    "voice_description": "French accent"
+  },
+  "stt": {
+    "provider": "gradium"
+  },
+  "gradbot": {
+    "silence_timeout_s": 0.0,
+    "flush_duration_s": 0.5,
+    "padding_bonus": 0.0,
+    "assistant_speaks_first": true
+  }
+}

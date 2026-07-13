@@ -1,0 +1,36 @@
+[project]
+name = "gradbot-voice"
+version = "0.1.0"
+description = "Voice agent on the gradbot framework — a twin of sceance for head-to-head comparison"
+# gradbot requires >=3.12 (it ships cp312/cp313/cp314 wheels only).
+requires-python = ">=3.12"
+dependencies = [
+    # Pinned: server/gradbot_session.py is a fork of this package's
+    # websocket.handle_session. An unpinned bump could silently drift from it.
+    "gradbot==0.1.10",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "asyncpg>=0.30",
+    "pyjwt[crypto]>=2.9",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "loguru>=0.7",
+    "pydantic>=2.9",
+    # Not a voice provider — this is the model that writes the per-session
+    # latency analysis on the dashboard (latency_report.py).
+    "anthropic>=0.40",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.7",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

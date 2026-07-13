@@ -1,0 +1,32 @@
+# DigitalOcean App Platform — the gradbot twin.
+#
+# Separate app from sceance, but the SAME Supabase project: both write to one
+# database and are told apart by sessions.framework. Set the SUPABASE_* secrets
+# in the App Platform UI to the same values sceance uses.
+name: gradbot-voice
+region: nyc
+
+services:
+  - name: web
+    dockerfile_path: Dockerfile
+    source_dir: /
+    github:
+      repo: SkatAI/gradbot
+      branch: production
+      deploy_on_push: true
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    health_check:
+      http_path: /health
+    envs:
+      - key: DEPLOY_ENV
+        value: online
+      - key: MAX_SESSIONS
+        value: "5"
+      - key: GRADIUM_API_KEY
+        type: SECRET
+      - key: OPENAI_API_KEY
+        type: SECRET
+      - key: OPENROUTER_API_KEY
+        type: SECRET

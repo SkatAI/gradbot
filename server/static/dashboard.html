@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gradbot · Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dashboard.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-left">
+      <div class="eyebrow">Gradbot · Operator</div>
+      <h1 class="title">Ledger of Transmissions</h1>
+      <p class="subtitle">A record of every call — who spoke, for how long, at what cost.</p>
+    </div>
+    <nav class="period" id="period" role="tablist" aria-label="Period">
+      <button data-days="1"  role="tab">24h</button>
+      <button data-days="7"  role="tab" class="active">7d</button>
+      <button data-days="30" role="tab">30d</button>
+      <button data-days="365" role="tab">all</button>
+    </nav>
+  </header>
+
+  <section class="aggregate" id="aggregate" aria-label="Aggregate metrics">
+    <div class="agg-placeholder">Summoning…</div>
+  </section>
+
+  <section class="sessions">
+    <div class="sessions-head">
+      <h2>Recent calls</h2>
+      <!--
+        This database is shared with the Pipecat app, so the ledger lists both
+        stacks' calls. Sits outside the row grid below, which has a fixed set of
+        columns — no CSS surgery needed to add a filter.
+      -->
+      <select id="framework-filter" class="persona-filter" aria-label="Filter by framework">
+        <option value="">All stacks</option>
+      </select>
+      <div class="pager" id="pager"></div>
+    </div>
+    <div class="session-head-row" role="row">
+      <div class="sh-persona">
+        <select id="persona-filter" class="persona-filter" aria-label="Filter by agent">
+          <option value="">All agents</option>
+        </select>
+      </div>
+      <div class="sh-env">
+        <select id="env-filter" class="persona-filter" aria-label="Filter by environment">
+          <option value="">All envts</option>
+        </select>
+      </div>
+      <div class="sh-date">Started</div>
+      <div class="sh-dur">Duration</div>
+      <div class="sh-msgs">Turns</div>
+      <div class="sh-tok">Tokens</div>
+      <div class="sh-chev" aria-hidden="true"></div>
+    </div>
+    <ol class="session-list" id="sessions" aria-live="polite">
+      <li class="loading">Loading…</li>
+    </ol>
+  </section>
+
+  <footer class="footer">
+    <span>Gradbot · operator console</span>
+    <a href="/">← back to the agents</a>
+  </footer>
+
+  <script type="module" src="/dashboard.js"></script>
+</body>
+</html>

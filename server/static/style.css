@@ -1,0 +1,239 @@
+:root {
+  --bg: #0e1014;
+  --surface: #161922;
+  --text: #e6e6e6;
+  --muted: #8a8f99;
+  --accent: #c0a36e;
+  --accent-press: #a48a5b;
+  --danger: #8a3a3a;
+  --danger-press: #6e2e2e;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: max(2rem, env(safe-area-inset-top)) 1.5rem
+          max(2rem, env(safe-area-inset-bottom));
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.intro {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 1rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 80ms ease;
+  width: 100%;
+  font-family: inherit;
+}
+
+button:active { transform: scale(0.98); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.primary { background: var(--accent); color: #1a1408; }
+.primary:hover:not(:disabled) { background: var(--accent-press); }
+
+.secondary { background: var(--danger); color: #fff; }
+.secondary:hover:not(:disabled) { background: var(--danger-press); }
+
+.hidden { display: none !important; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: rgba(14, 16, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.topbar-brand {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+.topbar-right { display: flex; align-items: center; }
+.auth-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.auth-pill a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(192, 163, 110, 0.35);
+  padding-bottom: 1px;
+}
+.auth-pill a:hover { border-bottom-color: var(--accent); }
+.auth-username { color: var(--muted); }
+.link-btn {
+  background: transparent;
+  color: var(--muted);
+  width: auto;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+.link-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+.auth-form { display: flex; flex-direction: column; gap: 0.85rem; }
+.auth-form label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--muted); }
+.auth-form input {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.auth-form .hint { color: var(--muted); font-size: 0.8rem; line-height: 1.5; margin: -0.2rem 0 0; }
+
+.auth-waitlist {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  color: var(--text);
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.agents {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  /* break out of main's narrow column so up to 4 cards fit per row */
+  width: 90vw;
+  max-width: 960px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.agent-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* min basis + container max-width caps the row at four cards */
+  flex: 1 1 200px;
+  max-width: 220px;
+  /* equal-height cards in the row so the talk buttons line up */
+  align-self: stretch;
+}
+
+.agent-name {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.agent-desc {
+  margin: 0;
+  color: var(--text, inherit);
+  font-size: 1rem;
+  line-height: 1.5;
+  /* grow to fill the card so the button below sits at the same level
+     across cards regardless of description length */
+  flex: 1 1 auto;
+}
+
+.talk-btn {
+  /* smaller than the description; secondary to the name/description */
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  align-self: center;
+  width: auto;
+}
+
+.agent-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.agent-meta dt {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  align-self: center;
+}
+
+.agent-meta dd {
+  margin: 0;
+  color: var(--text, inherit);
+}
+
+.status {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.status.idle      { color: var(--muted); }
+.status.connecting{ color: var(--accent); }
+.status.connected { color: #7fc88f; }
+.status.error     { color: #d97777; }
