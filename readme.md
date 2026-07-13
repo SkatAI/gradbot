@@ -9,7 +9,7 @@ text-to-speech run as one continuous duplex stream, so the agent can be
 interrupted mid-sentence and will stop and listen, the way a person does.
 
 Every call is recorded to Postgres — full transcript, per-turn latency broken down
-by stage — and there's an operator dashboard to read it back.
+by stage. The app writes; monitoring lives elsewhere.
 
 ## Quick start
 
@@ -77,20 +77,23 @@ The browser half is gradbot's own `SyncedAudioPlayer` — microphone capture, Op
 encoding, and jitter-buffered playback — served straight out of the Python package.
 No frontend build step, no npm.
 
-## The dashboard
+## What gets recorded
 
-`/dashboard` (admin only) lists every call and drills into one: the transcript, a
-per-turn latency chart, and time-to-first-byte for each stage of the pipeline
-(LLM, then TTS). There's also a one-click LLM-written post-mortem of a call's
-latency — what was slow, and whether it looks like model jitter or a bloated
-context.
+Each call writes to Postgres as it happens: the full transcript (both sides), a
+`user_stopped_speaking` → `bot_started_speaking` event pair per turn, and
+time-to-first-byte for each stage of the pipeline (`GradbotLLM`, then
+`GradiumTTS`).
+
+This app has **no dashboard** — it records and never reads back. The schema it
+writes is the shared one, so an operator console reading the same database sees
+these calls alongside any others. Rows are tagged `framework = 'gradbot'`.
 
 ## Known limitations
 
 These come from gradbot itself, and are worth knowing before you build on it:
 
 - **No token accounting.** The Rust core makes the LLM call and never reports
-  usage, so the dashboard's token counters read zero.
+  usage, so `sessions.total_*_tokens` are always zero.
 - **No canned opening line.** There is no speak-this-text API, so the agent's
   first turn is a real LLM generation — you'll hear a cold-start pause of a second
   or two before it says hello.

@@ -2,9 +2,9 @@
 
 A voice agent built on [gradbot](https://github.com/gradium-ai/gradbot) (Gradium's
 Rust-core framework). It is a deliberate **twin of `../sceance`**, which is the
-same product on Pipecat — same personas, same users, same database, same
-dashboard. The point is a head-to-head comparison: latency, quality, and what it
-costs a developer to work in each framework.
+same product on Pipecat — same personas, same users, same database. The point is
+a head-to-head comparison: latency, quality, and what it costs a developer to
+work in each framework. Sceance owns the dashboard; this app only writes to it.
 
 Read `../sceance/CLAUDE.md` first if you don't know that app. Almost everything
 here is copied from it; this file only records where the two diverge and why.
@@ -48,11 +48,21 @@ Gradbot defaults it to 5 s, which makes the agent re-prompt itself with its own
 last message whenever the user goes quiet — it talks to itself. Both personas pin
 it to zero, and a test enforces that.
 
-## Shared database
+## Shared database — and no dashboard here
 
 This app and sceance write to **one Supabase project**. `sessions.framework`
 (`'gradbot'` | `'pipecat'`) tells them apart; it defaults to `'pipecat'` so
 historical rows backfill correctly and **sceance needed no code change**.
+
+**This app writes but never reads.** There is no dashboard, no `/api/sessions`,
+no admin routes — sessions are monitored from sceance, whose dashboard reads the
+same tables and filters by `framework`. So do not add read-side code here; add it
+there.
+
+The practical consequence is that `server/tracing.py` is now a **cross-repo API
+with no local consumer**. Nothing in this repo will fail if you rename an
+`events.kind` — a panel in sceance will just quietly go blank. `tests/test_tracing.py`
+pins the strings precisely because nothing else can catch a break.
 
 Only one migration belongs to this app:
 
@@ -60,19 +70,14 @@ Only one migration belongs to this app:
 
 `001`–`006` are copied in for reference only — they are already applied.
 
-The dashboard shows both stacks' calls, with a framework filter and a per-row
-tag. Remember that when reading the ledger: an unfiltered latency figure is an
-average across two different frameworks.
-
 ## What this app does NOT have
 
 Each of these is a gradbot limitation, not an oversight:
 
-- **Token counts.** The Rust core owns the LLM call and never surfaces usage. So
-  `sessions.total_*_tokens` are always 0 here and the dashboard's token KPI cards
-  read zero. `latency_collector.LLM_PROCESSOR` is pinned to a constant for the
-  same reason — sceance infers the LLM stage from `llm_usage` rows, and there are
-  none.
+- **Token counts.** The Rust core owns the LLM call and never surfaces usage, so
+  `sessions.total_*_tokens` are always 0 here and sceance's token panels read zero
+  for these sessions. Sceance also infers the LLM stage from `llm_usage` rows —
+  there are none, so it has to key off the `GradbotLLM` processor name instead.
 - **A static greeting.** There is no speak-this-text API (`SessionInputHandle` is
   only `send_audio` / `send_config` / `close`), so the agent opens with a real
   LLM turn and the greeting is folded into the system prompt. Turn-zero latency is
@@ -98,14 +103,15 @@ Verify a model id is still live with the provider before putting it in a persona
 
 ## The tracing contract
 
-`server/tracing.py` translates gradbot's `MsgOut` stream into sceance's schema.
-This is what let the dashboard carry over untouched, and it is a **contract with
-code in another repo** — sceance derives `response_latency` purely from the gap
-between a `user_stopped_speaking` event and the next `bot_started_speaking`, and
-groups TTFB by `metrics.processor`.
+`server/tracing.py` translates gradbot's `MsgOut` stream into the shared schema.
+Since this app has no dashboard of its own, that mapping is a **contract with code
+in another repo, with no local consumer to catch a break** — sceance derives
+`response_latency` purely from the gap between a `user_stopped_speaking` event and
+the next `bot_started_speaking`, and groups TTFB by `metrics.processor`.
 
-Rename a `kind` string here and a panel over there goes blank. Silently.
-`tests/test_tracing.py` pins the exact strings for that reason.
+Rename a `kind` string here and a panel over there goes blank. Silently, and with
+every test in this repo still green. `tests/test_tracing.py` pins the exact strings
+for that reason.
 
 ### Do not trust gradbot's timing fields. We measured them.
 
@@ -137,5 +143,5 @@ they are comparable — but say so when quoting the numbers.
   else stays testable).
 - `server/routes/sessions.py` — `POST /start-session` reserves a slot;
   `WS /ws/chat` runs the call. Two-phase because the session *is* the WebSocket.
-- `server/static/app.js` — the only frontend file that differs from sceance:
-  `startSession()` drives `SyncedAudioPlayer` + a WebSocket instead of Daily.
+- `server/static/app.js` — the whole frontend. `startSession()` drives
+  `SyncedAudioPlayer` + a WebSocket instead of Daily. There is no dashboard page.

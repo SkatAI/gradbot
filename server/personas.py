@@ -322,7 +322,7 @@ class Persona:
             "name": self.name,
             "description": self.description,
             "lang": self.lang,
-            # The dashboard/card templates carried over from sceance read this;
+            # The agent card in the browser reads this;
             # this app has no memory, so it is always false.
             "memory": False,
             "voice_name": self.tts.voice_name,

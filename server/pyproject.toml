@@ -16,9 +16,6 @@ dependencies = [
     "python-dotenv>=1.0",
     "loguru>=0.7",
     "pydantic>=2.9",
-    # Not a voice provider — this is the model that writes the per-session
-    # latency analysis on the dashboard (latency_report.py).
-    "anthropic>=0.40",
 ]
 
 [dependency-groups]

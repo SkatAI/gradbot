@@ -1,14 +1,19 @@
-"""Translate gradbot's `MsgOut` stream into sceance's tracing schema.
+"""Translate gradbot's `MsgOut` stream into the shared tracing schema.
 
-This module is why the dashboard needed no changes. Sceance's session pages are
-built on a handful of well-known `events.kind` strings and `metrics.processor`
-names — `response_latency`, for instance, is derived purely from the gap between
-a `user_stopped_speaking` event and the next `bot_started_speaking`. Emit the
-same vocabulary from gradbot's very different event stream, and every chart,
-table and transcript downstream keeps working.
+This app records calls but never reads them back — it has no dashboard. Sessions
+are monitored from sceance, which reads the same database. That makes this module
+a **contract with code in another repo**, and the only thing holding it up.
 
-So the mapping below is not incidental: it is a contract with code in another
-repo. Changing a `kind` string here silently blanks a panel over there.
+Sceance's session pages are built on a handful of well-known `events.kind`
+strings and `metrics.processor` names: `response_latency`, for instance, is
+derived purely from the gap between a `user_stopped_speaking` event and the next
+`bot_started_speaking`, and TTFB is grouped by `processor`. Emit that vocabulary
+from gradbot's very different event stream and every chart, table and transcript
+over there keeps working.
+
+Rename a `kind` here and a panel goes blank over there. Silently — nothing in
+this repo will fail. `tests/test_tracing.py` pins the exact strings for that
+reason; treat them as an API, not as local names.
 
     gradbot MsgOut            ->  sceance schema
     ─────────────────────────────────────────────────────────────────────
@@ -25,7 +30,7 @@ repo. Changing a `kind` string here silently blanks a panel over there.
 
 Deliberately NOT emitted: `llm_usage` rows. Gradbot's Rust core calls the LLM
 itself and never surfaces token counts, so `sessions.total_*_tokens` stay 0 for
-this app. See `latency_collector.LLM_PROCESSOR` for the knock-on.
+this app, and sceance's token panels will read zero for its sessions.
 
 Timestamps come from the local clock at message arrival, NOT from gradbot's own
 timing fields — those turned out to be unusable. See `SessionTracer._ts`.
@@ -41,8 +46,8 @@ import time
 
 from loguru import logger
 
-# Stable names for the three stages. `dashboard_repository.aggregate` groups TTFB
-# rows BY processor, so these strings are what the operator actually reads.
+# Stable names for the pipeline stages. Sceance's dashboard groups TTFB rows BY
+# processor, so these strings are what the operator actually reads there.
 LLM_PROCESSOR = "GradbotLLM"
 TTS_PROCESSOR = "GradiumTTS"
 

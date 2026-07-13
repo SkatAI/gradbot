@@ -262,7 +262,7 @@ def test_ttfb_is_never_zero_for_a_turn_that_actually_took_time():
 def test_no_llm_usage_rows_are_ever_written():
     # v1 records no token counts — gradbot's Rust core never surfaces them. If
     # this ever starts failing, sessions.total_*_tokens can stop being zero and
-    # latency_collector's pinned LLM_PROCESSOR can go back to being inferred.
+    # sceance can stop pinning the LLM stage and infer it from token rows again.
     rec = FakeRecorder()
     t = tracer(rec)
     t.on_msg(event("push_to_llm"))

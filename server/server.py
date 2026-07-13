@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from loguru import logger
 
 import session_tasks
-from routes import admin, auth, public, sessions
+from routes import auth, public, sessions
 from settings import get_settings
 from storage import close_pool, create_pool
 
@@ -70,7 +70,8 @@ app.mount("/static/js", StaticFiles(directory=str(JS_AUDIO_DIR)), name="gradbot_
 app.include_router(public.router)
 app.include_router(auth.router)
 app.include_router(sessions.router)
-app.include_router(admin.router)
+# No admin/dashboard router: this app records sessions but does not read them
+# back. Sessions are monitored from sceance, which reads the same database.
 
 # Mount the app's own static last so the API routes above take precedence.
 _static_dir = get_settings().static_dir

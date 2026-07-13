@@ -1,11 +1,10 @@
-"""Public, unauthenticated routes: config, health, landing redirects, agents."""
+"""Public, unauthenticated routes: config, health, agents."""
 
 from __future__ import annotations
 
 import json
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import FileResponse, RedirectResponse
 from loguru import logger
 
 import session_tasks
@@ -41,19 +40,6 @@ async def audio_config():
 @router.get("/health")
 async def health():
     return {"ok": True, "active_sessions": session_tasks.count()}
-
-
-@router.get("/dashboard")
-async def dashboard():
-    return RedirectResponse(url="/dashboard.html")
-
-
-@router.get("/sessions/{session_id}")
-async def session_page(session_id: str):
-    # Operator detail view for a single séance. The page itself is admin-gated
-    # client-side (same as the dashboard); the JWT-protected data is fetched
-    # from /api/sessions/{id}.
-    return FileResponse(get_settings().static_dir / "session.html")
 
 
 @router.get("/agents")

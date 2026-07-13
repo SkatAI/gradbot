@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 import httpx
 import jwt
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Header, HTTPException, Request
 from jwt import PyJWKClient
 from loguru import logger
 
@@ -152,7 +152,6 @@ async def get_current_user_optional(
         return None
 
 
-async def require_admin(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-    if not user.is_admin:
-        raise HTTPException(status_code=403, detail="admin_only")
-    return user
+# No `require_admin` dependency here (sceance has one). This app exposes no
+# admin API — `is_admin` survives on CurrentUser only because a persona can be
+# marked `visibility: "admin"`, which /agents and /start-session check directly.

@@ -45,9 +45,6 @@ class Settings:
     # LLM keys, looked up by `llm.provider` in the persona (see personas.LLM_PROVIDERS).
     openai_api_key: str | None = None
     openrouter_api_key: str | None = None
-    # Not a persona provider: the model that writes the per-session latency
-    # analysis on the dashboard. Read by latency_report.py via os.getenv.
-    anthropic_api_key: str | None = None
     # Paths
     static_dir: Path = _DEFAULT_STATIC_DIR
     personas_dir: Path = _DEFAULT_PERSONAS_DIR
@@ -69,7 +66,6 @@ class Settings:
             gradium_base_url=os.getenv("GRADIUM_BASE_URL"),
             openai_api_key=os.getenv("OPENAI_API_KEY"),
             openrouter_api_key=os.getenv("OPENROUTER_API_KEY"),
-            anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
         )
 
 

@@ -25,7 +25,6 @@ const authWaitlistEl = document.getElementById("auth-waitlist");
 const authSubmitBtn = document.getElementById("auth-submit");
 const authStatusEl = document.getElementById("auth-status");
 const authUsernameEl = document.getElementById("auth-username");
-const authDashboardLink = document.getElementById("auth-dashboard-link");
 const authLogoutBtn = document.getElementById("auth-logout");
 
 let ws = null;
@@ -316,7 +315,6 @@ function renderAuthState(me) {
     authForm.classList.add("hidden");
     authLoggedIn.classList.remove("hidden");
     authUsernameEl.textContent = me.username;
-    authDashboardLink.classList.toggle("hidden", !me.is_admin);
     agentsEl.classList.remove("hidden");
     loadAgents();
   } else {

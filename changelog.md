@@ -47,3 +47,20 @@ and dashboard so the two frameworks can be compared head-to-head.
   greeting (gradbot has no speak-this-text API — the agent now opens with a real
   LLM turn).
 - **Docker-only local runs**: gradbot ships no macOS x86_64 wheel.
+
+## 2026-07-13 — Drop the dashboard
+
+This app records calls and no longer reads them back. Sessions are monitored from
+sceance, which reads the same database and filters on `sessions.framework`.
+
+Removed: the admin API (`/api/sessions`, `/api/aggregate`, the per-session detail
+and its LLM-written latency post-mortem), the `/dashboard` and `/sessions/{id}`
+pages, and everything only they used — `dashboard_repository`, the four `latency*`
+modules, `llm_json`, `persona_snapshot`, `require_admin`, and the `anthropic`
+dependency (it was there solely to write the latency report).
+
+The recording path is untouched: `tracing.py` still writes the same `messages`,
+`events` and `metrics` rows, tagged `framework = 'gradbot'`. That mapping is now a
+cross-repo API with **no local consumer** — nothing here fails if a `kind` string
+is renamed; a panel in sceance just goes blank. `tests/test_tracing.py` is the only
+thing standing between the two.
