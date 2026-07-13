@@ -233,9 +233,15 @@ class GradbotConfig:
         # say to always set this to 0.
         silence_timeout_s = _number(gb.get("silence_timeout_s"), 0.0, "gradbot",
                                     "silence_timeout_s", id)
+        # How much silence ends the user's turn. Default 0.2, NOT gradbot's own
+        # 0.5 — that is Silero's `stop_secs` default, which is what the Pipecat
+        # build uses. With the two set differently the frameworks start their
+        # response-latency stopwatch 0.3s apart, and every cross-framework latency
+        # number is off by that much. (Measured: it made gradbot look 0.5s faster
+        # at the median when the real gap was 0.2s.) Keep them equal.
         return cls(
             silence_timeout_s=silence_timeout_s,
-            flush_duration_s=_number(gb.get("flush_duration_s"), 0.5, "gradbot",
+            flush_duration_s=_number(gb.get("flush_duration_s"), 0.2, "gradbot",
                                      "flush_duration_s", id),
             padding_bonus=_number(gb.get("padding_bonus"), 0.0, "gradbot",
                                   "padding_bonus", id),

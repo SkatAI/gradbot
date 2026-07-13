@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-13 — Align endpointing with the Pipecat build
+
+`flush_duration_s` 0.5 -> **0.2**, matching Silero's `stop_secs` default, which is
+what the Pipecat build uses.
+
+This was not a tuning choice, it was a measurement bug. `user_stopped_speaking`
+starts the response-latency stopwatch, and the two frameworks were firing it 0.3s
+apart — so gradbot appeared 0.5s faster at the median when the real gap was 0.2s,
+which is roughly the threshold of perception. The apparent win was mostly the
+offset. Both are now 0.2s, so the number means the same thing on both sides (and
+gradbot really is snappier at turn end, rather than just appearing so).
+
 ## 2026-07-13 — first real calls
 
 Three bugs found by actually phoning the agents:

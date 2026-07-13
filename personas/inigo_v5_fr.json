@@ -26,7 +26,7 @@
   },
   "gradbot": {
     "silence_timeout_s": 0.0,
-    "flush_duration_s": 0.5,
+    "flush_duration_s": 0.2,
     "padding_bonus": 0.0,
     "assistant_speaks_first": true
   }
