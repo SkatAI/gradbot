@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-07-13 — first real calls
+
+Three bugs found by actually phoning the agents:
+
+- **The agent was inaudible.** `app.js` set `ws.binaryType = "arraybuffer"`.
+  `SyncedAudioPlayer` dispatches on `data instanceof Blob` to recognise audio, so
+  every audio frame fell through to the JSON branch, had no `.type`, and was
+  dropped in silence. Removed — the default (`blob`) is what it wants.
+- **Transcripts never reached the log.** They went to Postgres and nowhere else,
+  so "did it even hear me?" needed a SQL query. `tracing.py` now logs each turn as
+  `[user] …` / `[agent] …`.
+- **Assistant turns were split in two.** `tts_text` captions lag the audio they
+  describe — the final word lands ~0.7s *after* `end_tts_audio` — so closing the
+  transcript on that event cut sentences in half ("…what did you" / "say?") and
+  truncated the greeting. The transcript now closes on `end_of_turn`.
+
 ## 2026-07-13
 
 Bootstrapped the repo — a gradbot twin of sceance, sharing its database, users

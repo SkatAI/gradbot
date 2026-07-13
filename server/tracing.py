@@ -116,6 +116,10 @@ class SessionTracer:
         text = " ".join(self._user_words).strip()
         self._user_words.clear()
         if text:
+            # Logged, not just recorded: when a call misbehaves the first question
+            # is always "did it hear me?", and the answer should be in the log
+            # rather than a SQL query away.
+            logger.info(f"[user]  {text}")
             self._recorder.record_message(role="user", text=text, language=self._lang)
 
     def _flush_agent(self) -> None:
@@ -127,6 +131,7 @@ class SessionTracer:
         self._agent_turn = None
         if not text:
             return
+        logger.info(f"[agent] {text}")
         self._recorder.record_message(role="assistant", text=text, language=self._lang)
         # Gradium never reports usage, so character count is the only TTS cost
         # signal there is. It feeds sessions.total_tts_chars via UsageTotals.
@@ -211,13 +216,18 @@ class SessionTracer:
                 self._record_ttfb(TTS_PROCESSOR, self._t_first_word_ns, ts)
 
         elif kind == "end_tts_audio":
+            # The agent has stopped making sound — but do NOT close the transcript
+            # here. `tts_text` captions lag the audio they describe, so a trailing
+            # word can arrive after this event; flushing now splits one sentence
+            # across two message rows ("…what did you" / "say?").
             self._recorder.record_event("bot_stopped_speaking", ts)
             self._recorder.record_event("tts_stop", ts)
             self._recorder.record_event("llm_end", ts)
-            self._flush_agent()
             self._reset_turn()
 
         elif kind == "end_of_turn":
+            # The real turn boundary: the user has finished speaking and the
+            # exchange is about to move on. Everything the agent said is now in.
             self._flush_agent()
             self._reset_turn()
 

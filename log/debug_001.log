@@ -1,0 +1,108 @@
+INFO:     Started server process [10]
+INFO:     Waiting for application startup.
+2026-07-13 11:32:03.161 | INFO     | server:lifespan:43 - Static dir: /app/server/static, MAX_SESSIONS=5
+2026-07-13 11:32:03.499 | INFO     | storage:create_pool:36 - Supabase pool created
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8282 (Press CTRL+C to quit)
+INFO:     192.168.65.1:56422 - "GET /health HTTP/1.1" 200 OK
+2026-07-13 11:32:44.377 | INFO     | routes.sessions:start_session:69 - Reserved session ce812108-8d9f-45f0-99d5-0e21534ec368 for inigo_v5_fr (slots=1)
+INFO:     192.168.65.1:28150 - "POST /start-session HTTP/1.1" 200 OK
+INFO:     192.168.65.1:28150 - "GET /api/audio-config HTTP/1.1" 200 OK
+INFO:     192.168.65.1:28150 - "GET /static/js/audio-output-worklet.js HTTP/1.1" 304 Not Modified
+INFO:     192.168.65.1:62494 - "WebSocket /ws/chat" [accepted]
+INFO:     connection open
+INFO:     192.168.65.1:28150 - "GET /static/js/decoderWorker.min.js HTTP/1.1" 304 Not Modified
+INFO:     192.168.65.1:31417 - "GET /static/js/encoderWorker.min.js HTTP/1.1" 304 Not Modified
+INFO:     192.168.65.1:28150 - "GET /static/js/decoderWorker.min.wasm HTTP/1.1" 304 Not Modified
+2026-07-13 11:32:45.995 | INFO     | recorder:start:70 - SessionRecorder started for session ce812108-8d9f-45f0-99d5-0e21534ec368
+2026-07-13 11:32:45.995 | INFO     | routes.sessions:on_start:131 - Session ce812108-8d9f-45f0-99d5-0e21534ec368 live: inigo_v5_fr / gpt-4.1
+[2m2026-07-13T11:32:45.998818Z[0m [32m INFO[0m [2mgradbot[0m[2m:[0m creating clients [3mgradium_base_url[0m[2m=[0m"https://api.gradium.ai/api" [3mllm_base_url[0m[2m=[0m"(default)"
+[2m2026-07-13T11:32:46.012532Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m llm client created [3mmodel[0m[2m=[0mgpt-4.1 [3mcompletions_url[0m[2m=[0mhttps://api.openai.com/v1/chat/completions
+[2m2026-07-13T11:32:46.025030Z[0m [32m INFO[0m [2mgradbot::speech_to_text[0m[2m:[0m starting STT stream [3mlanguage[0m[2m=[0m"fr"
+[2m2026-07-13T11:32:46.148326Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m0.0 [3mevent[0m[2m=[0mPushToLlm { user_text: "[start]" }
+[2m2026-07-13T11:32:47.631020Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m LLM SSE: entering byte_stream loop
+[2m2026-07-13T11:32:47.631183Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m creating TTS stream [3mvoice_id[0m[2m=[0mSome("axlOaUiFyOZhy4nv")
+[2m2026-07-13T11:32:47.631026Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m0.0 [3mevent[0m[2m=[0mLlmStarted
+[2m2026-07-13T11:32:47.729474Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS stream created successfully
+[2m2026-07-13T11:32:47.729561Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM time-to-first-token [3mttft_ms[0m[2m=[0m98
+[2m2026-07-13T11:32:47.729690Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m2.0 [3mevent[0m[2m=[0mFirstWord
+[2m2026-07-13T11:32:47.827451Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-loop"
+[2m2026-07-13T11:32:47.827519Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM stream complete [3mllm_total_ms[0m[2m=[0m196
+[2m2026-07-13T11:32:48.091485Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m2.32 [3mevent[0m[2m=[0mFirstTtsAudio
+[2m2026-07-13T11:32:55.111921Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS receiver finished [3mmessage_count[0m[2m=[0m120
+[2m2026-07-13T11:32:55.112090Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m9.36 [3mevent[0m[2m=[0mEndTtsAudio
+[2m2026-07-13T11:32:55.112146Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM/TTS task completed successfully [3mstop_s[0m[2m=[0m7.76
+[2m2026-07-13T11:32:55.112163Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-tts"
+[2m2026-07-13T11:32:55.115442Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m transitioning to Listening [3mstop_s[0m[2m=[0m7.76 [3mstt_time[0m[2m=[0m9.36 [3msince_s[0m[2m=[0m9.36 [3mdrift[0m[2m=[0m-1.5999999999999996 [3mturn_idx[0m[2m=[0m0
+2026-07-13 11:33:01.656 | INFO     | recorder:close:159 - SessionRecorder closed for session ce812108-8d9f-45f0-99d5-0e21534ec368
+2026-07-13 11:33:01.656 | INFO     | routes.sessions:ws_chat:147 - Session ce812108-8d9f-45f0-99d5-0e21534ec368 ended
+2026-07-13 11:33:44.478 | INFO     | routes.sessions:start_session:69 - Reserved session fc50dab7-bb50-4493-badf-603e95aa3dc1 for yarden_mini (slots=1)
+INFO:     192.168.65.1:37726 - "POST /start-session HTTP/1.1" 200 OK
+INFO:     192.168.65.1:37726 - "GET /api/audio-config HTTP/1.1" 200 OK
+INFO:     192.168.65.1:32139 - "WebSocket /ws/chat" [accepted]
+INFO:     connection open
+2026-07-13 11:33:46.285 | INFO     | recorder:start:70 - SessionRecorder started for session fc50dab7-bb50-4493-badf-603e95aa3dc1
+2026-07-13 11:33:46.286 | INFO     | routes.sessions:on_start:131 - Session fc50dab7-bb50-4493-badf-603e95aa3dc1 live: yarden_mini / meta-llama/llama-4-maverick
+[2m2026-07-13T11:33:46.286353Z[0m [32m INFO[0m [2mgradbot[0m[2m:[0m creating clients [3mgradium_base_url[0m[2m=[0m"https://api.gradium.ai/api" [3mllm_base_url[0m[2m=[0m"https://openrouter.ai/api/v1"
+[2m2026-07-13T11:33:46.297851Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m llm client created [3mmodel[0m[2m=[0mmeta-llama/llama-4-maverick [3mcompletions_url[0m[2m=[0mhttps://openrouter.ai/api/v1/chat/completions
+[2m2026-07-13T11:33:46.308412Z[0m [32m INFO[0m [2mgradbot::speech_to_text[0m[2m:[0m starting STT stream [3mlanguage[0m[2m=[0m"en"
+[2m2026-07-13T11:33:46.408146Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m0.0 [3mevent[0m[2m=[0mPushToLlm { user_text: "[start]" }
+[2m2026-07-13T11:33:47.132087Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m LLM SSE: entering byte_stream loop
+[2m2026-07-13T11:33:47.132153Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m0.0 [3mevent[0m[2m=[0mLlmStarted
+[2m2026-07-13T11:33:47.132193Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m creating TTS stream [3mvoice_id[0m[2m=[0mSome("P4GqVY98hjQSvkiu")
+[2m2026-07-13T11:33:47.232429Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS stream created successfully
+[2m2026-07-13T11:33:47.232532Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM time-to-first-token [3mttft_ms[0m[2m=[0m100
+[2m2026-07-13T11:33:47.232725Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m1.12 [3mevent[0m[2m=[0mFirstWord
+[2m2026-07-13T11:33:47.435061Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-loop"
+[2m2026-07-13T11:33:47.435114Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM stream complete [3mllm_total_ms[0m[2m=[0m303
+[2m2026-07-13T11:33:47.641857Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m1.6 [3mevent[0m[2m=[0mFirstTtsAudio
+[2m2026-07-13T11:33:48.834112Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m VAD-based interruption: voice activity detected while processing [3minactivity_prob[0m[2m=[0m0.056640625 [3melapsed[0m[2m=[0m2.08
+[2m2026-07-13T11:33:48.854981Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS receiver finished [3mmessage_count[0m[2m=[0m30
+[2m2026-07-13T11:33:48.855286Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM/TTS task completed successfully [3mstop_s[0m[2m=[0m2.0
+[2m2026-07-13T11:33:48.855376Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-tts"
+[2m2026-07-13T11:33:48.855450Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m2.8 [3mevent[0m[2m=[0mEndTtsAudio
+[2m2026-07-13T11:33:48.859410Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m transitioning to Listening [3mstop_s[0m[2m=[0m2.0 [3mstt_time[0m[2m=[0m2.8 [3msince_s[0m[2m=[0m2.8 [3mdrift[0m[2m=[0m-0.7999999999999998 [3mturn_idx[0m[2m=[0m0
+[2m2026-07-13T11:33:49.685160Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m on_text called [3mtext[0m[2m=[0m"I'm going" [3mstt_time[0m[2m=[0m1.92 [3msilence_prompts[0m[2m=[0m0
+[2m2026-07-13T11:33:50.409344Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m4.32 [3mevent[0m[2m=[0mFlushing { started_listening: 2.8, text_chunks: 1 }
+[2m2026-07-13T11:33:50.803620Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m4.72 [3mevent[0m[2m=[0mEndOfTurn
+[2m2026-07-13T11:33:50.804342Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m4.72 [3mevent[0m[2m=[0mPreviousLlmGen { agent_text: "Hi, I'm Sophie. What's your" }
+[2m2026-07-13T11:33:50.805596Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m4.72 [3mevent[0m[2m=[0mPushToLlm { user_text: "I'm going" }
+[2m2026-07-13T11:33:51.235385Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m LLM SSE: entering byte_stream loop
+[2m2026-07-13T11:33:51.235438Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m5.2 [3mevent[0m[2m=[0mLlmStarted
+[2m2026-07-13T11:33:51.235509Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m creating TTS stream [3mvoice_id[0m[2m=[0mSome("P4GqVY98hjQSvkiu")
+[2m2026-07-13T11:33:51.322797Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS stream created successfully
+[2m2026-07-13T11:33:51.322958Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM time-to-first-token [3mttft_ms[0m[2m=[0m87
+[2m2026-07-13T11:33:51.323024Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m5.28 [3mevent[0m[2m=[0mFirstWord
+[2m2026-07-13T11:33:51.641156Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-loop"
+[2m2026-07-13T11:33:51.641221Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM stream complete [3mllm_total_ms[0m[2m=[0m405
+[2m2026-07-13T11:33:51.704724Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m5.6 [3mevent[0m[2m=[0mFirstTtsAudio
+[2m2026-07-13T11:33:55.806741Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m VAD-based interruption: voice activity detected while processing [3minactivity_prob[0m[2m=[0m0.31640625 [3melapsed[0m[2m=[0m5.680000000000001
+[2m2026-07-13T11:33:55.824967Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS receiver finished [3mmessage_count[0m[2m=[0m76
+[2m2026-07-13T11:33:55.825176Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m9.68 [3mevent[0m[2m=[0mEndTtsAudio
+[2m2026-07-13T11:33:55.825186Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM/TTS task completed successfully [3mstop_s[0m[2m=[0m10.08
+[2m2026-07-13T11:33:55.825200Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-tts"
+[2m2026-07-13T11:33:55.827695Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m transitioning to Listening [3mstop_s[0m[2m=[0m10.08 [3mstt_time[0m[2m=[0m9.68 [3msince_s[0m[2m=[0m10.08 [3mdrift[0m[2m=[0m0.40000000000000036 [3mturn_idx[0m[2m=[0m1
+[2m2026-07-13T11:33:55.888715Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m on_text called [3mtext[0m[2m=[0m"to" [3mstt_time[0m[2m=[0m9.52 [3msilence_prompts[0m[2m=[0m0
+[2m2026-07-13T11:33:56.328410Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m on_text called [3mtext[0m[2m=[0m"be" [3mstt_time[0m[2m=[0m9.92 [3msilence_prompts[0m[2m=[0m0
+[2m2026-07-13T11:33:57.033878Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m10.96 [3mevent[0m[2m=[0mFlushing { started_listening: 10.08, text_chunks: 2 }
+[2m2026-07-13T11:33:57.298683Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m11.2 [3mevent[0m[2m=[0mEndOfTurn
+[2m2026-07-13T11:33:57.299397Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m11.2 [3mevent[0m[2m=[0mPreviousLlmGen { agent_text: "The price of eggs is going up again, isn't it? What's your name, by the" }
+[2m2026-07-13T11:33:57.300151Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m11.2 [3mevent[0m[2m=[0mPushToLlm { user_text: "to be" }
+[2m2026-07-13T11:33:57.748574Z[0m [32m INFO[0m [2mgradbot::llm[0m[2m:[0m LLM SSE: entering byte_stream loop
+[2m2026-07-13T11:33:57.748652Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m11.68 [3mevent[0m[2m=[0mLlmStarted
+[2m2026-07-13T11:33:57.748586Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m creating TTS stream [3mvoice_id[0m[2m=[0mSome("P4GqVY98hjQSvkiu")
+[2m2026-07-13T11:33:57.840746Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS stream created successfully
+[2m2026-07-13T11:33:57.840898Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM time-to-first-token [3mttft_ms[0m[2m=[0m92
+[2m2026-07-13T11:33:57.841048Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m11.76 [3mevent[0m[2m=[0mFirstWord
+[2m2026-07-13T11:33:58.351378Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-loop"
+[2m2026-07-13T11:33:58.351441Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM stream complete [3mllm_total_ms[0m[2m=[0m602
+[2m2026-07-13T11:33:58.536883Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m12.4 [3mevent[0m[2m=[0mFirstTtsAudio
+[2m2026-07-13T11:34:01.063154Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m TTS receiver finished [3mmessage_count[0m[2m=[0m56
+[2m2026-07-13T11:34:01.063378Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m OUT Event [3mtime_s[0m[2m=[0m14.96 [3mevent[0m[2m=[0mEndTtsAudio
+[2m2026-07-13T11:34:01.063434Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m LLM/TTS task completed successfully [3mstop_s[0m[2m=[0m15.28
+[2m2026-07-13T11:34:01.063488Z[0m [32m INFO[0m [2mgradbot::utils[0m[2m:[0m task completed successfully [3mname[0m[2m=[0m"llm-tts"
+[2m2026-07-13T11:34:01.065541Z[0m [32m INFO[0m [2mgradbot::multiplex[0m[2m:[0m transitioning to Listening [3mstop_s[0m[2m=[0m15.28 [3mstt_time[0m[2m=[0m14.96 [3msince_s[0m[2m=[0m15.28 [3mdrift[0m[2m=[0m0.3199999999999985 [3mturn_idx[0m[2m=[0m2
+2026-07-13 11:34:02.254 | INFO     | recorder:close:159 - SessionRecorder closed for session fc50dab7-bb50-4493-badf-603e95aa3dc1
+2026-07-13 11:34:02.254 | INFO     | routes.sessions:ws_chat:147 - Session fc50dab7-bb50-4493-badf-603e95aa3dc1 ended
+INFO:     192.168.65.1:24977 - "GET /static/js/synced-audio-player.js HTTP/1.1" 200 OK
+INFO:     192.168.65.1:22244 - "GET /static/js/synced-audio-player.js HTTP/1.1" 200 OK

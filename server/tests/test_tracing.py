@@ -96,6 +96,7 @@ def test_agent_speech_becomes_one_message_and_a_tts_char_count():
     t.on_msg(tts("are", turn_idx=1))
     t.on_msg(tts("dear.", turn_idx=1))
     t.on_msg(event("end_tts_audio"))
+    t.on_msg(event("end_of_turn"))
 
     assert rec.messages == [{"role": "assistant", "text": "Eggs are dear.", "language": "en"}]
     usage = [m for m in rec.metrics if m["kind"] == "tts_usage"]
@@ -105,6 +106,24 @@ def test_agent_speech_becomes_one_message_and_a_tts_char_count():
     }]
 
 
+def test_a_trailing_caption_after_end_tts_audio_stays_in_the_same_message():
+    # Observed on a real call: tts_text captions lag the audio they describe, so
+    # the last word can land *after* end_tts_audio. Closing the transcript on
+    # that event split one sentence across two rows:
+    #     "Sorry, there's some noise on my end - what did you"
+    #     "say?"
+    rec = FakeRecorder()
+    t = tracer(rec)
+    t.on_msg(tts("what", turn_idx=1))
+    t.on_msg(tts("did", turn_idx=1))
+    t.on_msg(tts("you", turn_idx=1))
+    t.on_msg(event("end_tts_audio"))   # audio done...
+    t.on_msg(tts("say?", turn_idx=1))  # ...but the caption is still coming
+    t.on_msg(event("end_of_turn"))
+
+    assert [m["text"] for m in rec.messages] == ["what did you say?"]
+
+
 def test_a_new_turn_index_closes_the_previous_agent_turn():
     # Barge-in can start turn N+1 without an end event for turn N. Without this
     # the two turns would be concatenated into one nonsense message.
@@ -112,7 +131,7 @@ def test_a_new_turn_index_closes_the_previous_agent_turn():
     t = tracer(rec)
     t.on_msg(tts("first", turn_idx=1))
     t.on_msg(tts("second", turn_idx=2))
-    t.on_msg(event("end_tts_audio"))
+    t.on_msg(event("end_of_turn"))
 
     assert [m["text"] for m in rec.messages] == ["first", "second"]
 

@@ -215,7 +215,10 @@ async function startSession(agentId) {
 
   const proto = location.protocol === "https:" ? "wss:" : "ws:";
   ws = new WebSocket(`${proto}//${location.host}${ws_url}`);
-  ws.binaryType = "arraybuffer";
+  // Leave binaryType at its default of "blob". SyncedAudioPlayer dispatches on
+  // `data instanceof Blob` to decide "this is audio"; set it to "arraybuffer"
+  // and every audio frame falls through to the JSON branch, has no .type, and is
+  // dropped without a word. The agent speaks and you hear nothing.
 
   ws.onopen = () => {
     // The socket is a fresh connection with none of the headers we authorized
