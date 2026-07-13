@@ -70,10 +70,28 @@ def verify_jwt(token: str) -> dict:
             audience=_AUDIENCE,
         )
     except jwt.PyJWTError as e:
+        # Log the reason. Without this a 401 is a dead end: the detail only
+        # reaches the browser's network tab, so the server log shows a bare
+        # "401 Unauthorized" and you cannot tell an expired token from a bad
+        # signature from the wrong audience.
+        logger.warning(f"JWT rejected ({type(e).__name__}): {e}{_token_hint(token)}")
         raise HTTPException(status_code=401, detail=f"invalid_token: {e}") from e
     except Exception as e:
         logger.exception("JWT verify failed")
         raise HTTPException(status_code=401, detail="auth_unavailable") from e
+
+
+def _token_hint(token: str) -> str:
+    """Un-verified claims, for the log line only — never for an auth decision."""
+    try:
+        header = jwt.get_unverified_header(token)
+        claims = jwt.decode(token, options={"verify_signature": False})
+        return (
+            f" [alg={header.get('alg')} aud={claims.get('aud')} "
+            f"iss={claims.get('iss')} exp={claims.get('exp')}]"
+        )
+    except Exception:
+        return " [token is not a readable JWT]"
 
 
 @dataclass(frozen=True)

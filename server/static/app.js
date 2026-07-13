@@ -296,6 +296,15 @@ async function fetchMe(session) {
   const r = await fetch("/api/me", {
     headers: { "Authorization": `Bearer ${session.access_token}` },
   });
+  if (r.status === 401) {
+    // The stored token is stale or otherwise unacceptable to the server. Drop it
+    // — without this, supabase-js keeps handing the same dead token back on every
+    // page load, so you sit on the sign-in form holding a token that will never
+    // work again, and only a fresh login gets you out.
+    console.warn("/api/me rejected the stored session; signing out");
+    await supabase.auth.signOut();
+    return null;
+  }
   if (!r.ok) return null;
   return r.json();
 }

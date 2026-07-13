@@ -36,6 +36,14 @@ export async function bootAdmin() {
   const meRes = await fetch("/api/me", {
     headers: { "Authorization": `Bearer ${token}` },
   });
+  if (meRes.status === 401) {
+    // Stale token. Clear it before bouncing home, or the landing page loads the
+    // same dead session, 401s again, and shows the sign-in form with no clue why.
+    console.warn("/api/me rejected the stored session; signing out");
+    await supabase.auth.signOut();
+    window.location.href = "/";
+    return null;
+  }
   if (!meRes.ok) {
     window.location.href = "/";
     return null;
