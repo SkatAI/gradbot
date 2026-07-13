@@ -1,24 +1,31 @@
 IMAGE := gradbot-voice
-PORT   := 8080
+PORT   := 8282
 
-.PHONY: build run test lint migrate
+.PHONY: help build run test lint migrate
 
-# Local runs go through Docker: gradbot has no macOS x86_64 wheel, so on an
-# Intel Mac the linux/amd64 container is the only place it imports.
-build:
+# `make` on its own lists the targets. Each target's `##` comment is its blurb.
+.DEFAULT_GOAL := help
+help:
+	@echo "Gradbot voice — everything runs in Docker (gradbot has no macOS x86_64 wheel)."
+	@echo
+	@# The ## blurbs are read as plain text by grep, so make never expands them.
+	@# Substitute the vars we reference back in by hand.
+	@grep -E '^[a-z-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| sed -e 's/{{PORT}}/$(PORT)/' \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[1m%-9s\033[0m %s\n", $$1, $$2}'
+	@echo
+
+build: ## Build the image. Run this after any code change — nothing hot-reloads.
 	docker build -t $(IMAGE) .
 
-run:
-	docker run --rm -it -p $(PORT):8080 --env-file server/.env $(IMAGE)
+run: ## Serve the app on http://localhost:{{PORT}}. Needs `build` first.
+	docker run --rm -it -p $(PORT):8282 --env-file server/.env $(IMAGE)
 
-# Tests run in the container for the same reason `run` does — gradbot does not
-# import on an Intel Mac. Depends on `build`.
-test:
+test: ## Run pytest in the container. Needs `build` first.
 	docker run --rm $(IMAGE) uv run pytest
 
-lint:
+lint: ## Run ruff in the container. Needs `build` first.
 	docker run --rm $(IMAGE) uv run ruff check .
 
-# Apply the one migration this app adds to the shared Supabase DB.
-migrate:
+migrate: ## Create the schema in Supabase. Run once, before the first call.
 	psql "$$SUPABASE_DB_URL" -f server/migrations/007_framework.sql

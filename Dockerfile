@@ -21,5 +21,5 @@ COPY personas /app/personas
 
 WORKDIR /app/server
 ENV PYTHONUNBUFFERED=1
-EXPOSE 8080
-CMD ["uv", "run", "--no-dev", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8080"]
+EXPOSE 8282
+CMD ["uv", "run", "--no-dev", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8282"]

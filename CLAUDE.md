@@ -17,7 +17,7 @@ here is copied from it; this file only records where the two diverge and why.
 is no Rust toolchain to build the sdist, so **`import gradbot` cannot work
 outside a linux/amd64 container**. `uv sync` on the host will fail.
 
-    make build && make run     # the app, on :8080
+    make build && make run     # the app, on :8282
     make test                  # pytest, in the same image
 
 Code changes need a rebuild — nothing hot-reloads through the image.

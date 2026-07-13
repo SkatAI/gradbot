@@ -9,8 +9,7 @@
 //
 // Transport: a raw WebSocket to /ws/chat. SyncedAudioPlayer (loaded as globals
 // from /static/js — gradbot ships it) owns the microphone, Opus-encodes what it
-// captures, and plays back what the server sends. This is the only part of the
-// page that differs from the Pipecat build, which used Daily.
+// captures, and plays back what the server sends.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
