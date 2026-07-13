@@ -1,7 +1,8 @@
 IMAGE := gradbot-voice
+NAME  := gradbot-voice
 PORT   := 8282
 
-.PHONY: help build run test lint migrate
+.PHONY: help build run log test lint migrate
 
 # `make` on its own lists the targets. Each target's `##` comment is its blurb.
 .DEFAULT_GOAL := help
@@ -19,7 +20,16 @@ build: ## Build the image. Run this after any code change — nothing hot-reload
 	docker build -t $(IMAGE) .
 
 run: ## Serve the app on http://localhost:{{PORT}}. Needs `build` first.
-	docker run --rm -it -p $(PORT):8282 --env-file server/.env $(IMAGE)
+	docker run --rm -it --name $(NAME) -p $(PORT):8282 --env-file server/.env $(IMAGE)
+
+log: ## Follow the running app's logs. Use from a second terminal while `run` is up.
+	@# 2>&1 because uvicorn and loguru both write to stderr; without it you would
+	@# see the request log and none of the app's own output.
+	@if docker ps -q -f name='^$(NAME)$$' | grep -q .; then \
+		docker logs -f $(NAME) 2>&1; \
+	else \
+		echo "Nothing running — start the app with \`make run\` first."; \
+	fi
 
 test: ## Run pytest in the container. Needs `build` first.
 	docker run --rm $(IMAGE) uv run pytest
