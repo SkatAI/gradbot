@@ -30,9 +30,8 @@ def test_language_is_pinned_to_the_personas_language():
 
 
 def test_no_memory_brief_promise():
-    # sceance's shared appendix tells every persona it will receive a memory
-    # brief. This app never sends one, so promising it would just make the agent
-    # talk about context it doesn't have.
+    # This app has no cross-session memory. Promising the agent a "memory brief"
+    # it will never receive just makes it talk about context it doesn't have.
     instruction = build_system_instruction(load_persona("yarden_mini"))
     assert "memory brief" not in instruction.lower()
 

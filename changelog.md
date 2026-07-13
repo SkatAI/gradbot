@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-07-13 — Standalone
+
+The repo no longer assumes any sibling project.
+
+- **`CLAUDE.md` and `readme.md` rewritten** to stand alone, and every mention of
+  the other repo removed from the source comments too — 15 files. The readme now
+  walks through creating a Supabase project, where each of the four values comes
+  from, and how to run the schema.
+- **`server/.env.template`** — tracked (unlike `.env`), documents every variable.
+- **One schema file**, `server/migrations/001_schema.sql`, replacing the seven
+  copied migrations. Idempotent, so re-running it is a no-op. It drops the two
+  tables this app never touched (`user_profile`, `session_latency_analysis`) and
+  seeds an invite code (`gradbot`) so you can create the first account.
+  `sessions.framework` now defaults to `'gradbot'`.
+- **Both personas run on OpenRouter `meta-llama/llama-4-maverick`.** Léo moves off
+  `openai/gpt-4.1`; the `openai` provider is still supported, just unused.
+
 ## 2026-07-13 — Align endpointing with the Pipecat build
 
 `flush_duration_s` 0.5 -> **0.2**, matching Silero's `stop_secs` default, which is

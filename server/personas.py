@@ -18,14 +18,14 @@ This is the single parse point: `load_persona` reads a file and returns a
 `Persona`; everything else reads typed attributes off it. The original dict is
 kept on `Persona.raw` for the DB snapshot.
 
-Differences from the sceance schema, all forced by gradbot:
+The schema is deliberately narrow, and every omission is forced by gradbot:
 
 - No `opening_messages` and no `static_greeting`. Gradbot has no API to seed
   context messages or to speak a fixed line — `SessionInputHandle` is only
   send_audio / send_config / close. The opening turn is LLM-generated, so the
   greeting is folded into the system instruction instead (see `prompting.py`).
 - No `agent.memory`. Cross-session memory doesn't exist in this app.
-- No `pipecat` block, no `tts.speed`, no `stt.model` — all Pipecat/Deepgram-only.
+- No TTS speed or STT model knobs. Gradbot exposes neither.
 - `llm.provider` must be OpenAI-compatible; it resolves to an api-key + base-url
   pair (see `LLM_PROVIDERS`), because gradbot speaks nothing else.
 
@@ -233,12 +233,12 @@ class GradbotConfig:
         # say to always set this to 0.
         silence_timeout_s = _number(gb.get("silence_timeout_s"), 0.0, "gradbot",
                                     "silence_timeout_s", id)
-        # How much silence ends the user's turn. Default 0.2, NOT gradbot's own
-        # 0.5 — that is Silero's `stop_secs` default, which is what the Pipecat
-        # build uses. With the two set differently the frameworks start their
-        # response-latency stopwatch 0.3s apart, and every cross-framework latency
-        # number is off by that much. (Measured: it made gradbot look 0.5s faster
-        # at the median when the real gap was 0.2s.) Keep them equal.
+        # How much silence ends the user's turn — and therefore when
+        # `user_stopped_speaking` fires, which starts the response-latency
+        # stopwatch. Default 0.2, not gradbot's own 0.5: this is the value most
+        # VAD-based stacks use, so traces stay comparable with them. Raise it and
+        # the agent waits longer before answering; every latency figure grows with
+        # it, which is easy to mistake for the pipeline getting slower.
         return cls(
             silence_timeout_s=silence_timeout_s,
             flush_duration_s=_number(gb.get("flush_duration_s"), 0.2, "gradbot",

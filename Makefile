@@ -77,7 +77,7 @@ lint: ## Run ruff in the container. Needs `build` first.
 # ---- Database -------------------------------------------------------
 
 migrate: ## Create the schema in Supabase. Run once, before the first call.
-	psql "$$SUPABASE_DB_URL" -f server/migrations/007_framework.sql
+	psql "$$SUPABASE_DB_URL" -f server/migrations/001_schema.sql
 
 clean: ## Remove the locally built image.
 	-docker rmi $(IMAGE)

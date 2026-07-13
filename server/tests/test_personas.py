@@ -65,22 +65,25 @@ def test_system_prompt_is_baked_into_the_snapshot(name):
     assert persona.raw["persona"]["system_prompt"] == persona.system_prompt
 
 
-def test_the_two_personas_cover_both_languages_and_both_llm_providers():
-    # The point of shipping exactly these two: they exercise the en and fr paths,
-    # and both OpenAI-compatible providers.
+def test_the_two_personas_cover_both_languages():
+    # The point of shipping exactly these two: they exercise the en and fr paths.
     personas = [load_persona(n) for n in PORTED]
     assert {p.lang for p in personas} == {"en", "fr"}
-    assert {p.llm.provider for p in personas} == {"openai", "openrouter"}
 
 
-def test_openrouter_persona_gets_the_openrouter_base_url():
-    persona = load_persona("yarden_mini")
+@pytest.mark.parametrize("name", PORTED)
+def test_shipped_personas_run_on_openrouter(name):
+    persona = load_persona(name)
+    assert persona.llm.provider == "openrouter"
+    assert persona.llm.model == "meta-llama/llama-4-maverick"
     assert persona.llm.base_url == "https://openrouter.ai/api/v1"
 
 
-def test_openai_persona_has_no_base_url_override():
-    # None means "gradbot's default endpoint", which is OpenAI.
-    assert load_persona("inigo_v5_fr").llm.base_url is None
+def test_the_openai_provider_means_openais_own_endpoint():
+    # base_url None -> gradbot's default, which is api.openai.com. Not exercised by
+    # the shipped personas, but the provider table offers it.
+    persona = Persona.from_dict(minimal(llm={"provider": "openai", "model": "gpt-4.1"}), id="t")
+    assert persona.llm.base_url is None
 
 
 # ---- schema validation ----------------------------------------------------

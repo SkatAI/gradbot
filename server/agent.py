@@ -29,8 +29,7 @@ def build_session_config(persona: Persona) -> gradbot.SessionConfig:
         silence_timeout_s=persona.gradbot.silence_timeout_s,
         flush_duration_s=persona.gradbot.flush_duration_s,
         padding_bonus=persona.gradbot.padding_bonus,
-        # No tools: neither ported persona has any, and sceance has no
-        # function-calling to port.
+        # No tools. Gradbot supports them; neither persona defines any.
         tools=[],
     )
 

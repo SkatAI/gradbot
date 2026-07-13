@@ -70,8 +70,8 @@ app.mount("/static/js", StaticFiles(directory=str(JS_AUDIO_DIR)), name="gradbot_
 app.include_router(public.router)
 app.include_router(auth.router)
 app.include_router(sessions.router)
-# No admin/dashboard router: this app records sessions but does not read them
-# back. Sessions are monitored from sceance, which reads the same database.
+# No admin/dashboard router: this app records sessions but never reads them back.
+# Traces are read by whatever you point at the database.
 
 # Mount the app's own static last so the API routes above take precedence.
 _static_dir = get_settings().static_dir

@@ -5,8 +5,8 @@ accumulates usage totals, and enqueues transcript/event/metric rows for the
 background drain. The mechanical pieces live in `recording.py`:
 `RecordDrainQueue` (the non-blocking queue + batched flush) and `UsageTotals`.
 
-Unlike sceance's recorder this one has no cross-session memory hook: both ported
-personas are memory-off, so there is no profile to summarize at close.
+There is no cross-session memory hook: this app keeps no user profile, so there
+is nothing to summarize when a call ends.
 """
 
 from __future__ import annotations

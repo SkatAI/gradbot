@@ -152,6 +152,6 @@ async def get_current_user_optional(
         return None
 
 
-# No `require_admin` dependency here (sceance has one). This app exposes no
-# admin API — `is_admin` survives on CurrentUser only because a persona can be
-# marked `visibility: "admin"`, which /agents and /start-session check directly.
+# There is no `require_admin` dependency: this app exposes no admin API.
+# `is_admin` survives on CurrentUser only because a persona can be marked
+# `visibility: "admin"`, which /agents and /start-session check directly.

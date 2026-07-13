@@ -4,17 +4,16 @@ Shared by `/health` (reports the count), `/start-session` (reserves a slot and
 enforces MAX_SESSIONS), and `/ws/chat` (claims the reservation, then holds the
 slot for the life of the connection).
 
-Two-phase, because a gradbot session is split across two requests. Sceance could
-spawn its bot task inside `/start-session` and be done; here the session only
-really begins when the browser opens the WebSocket. So `/start-session` mints a
-session id and *reserves* it, and the socket *claims* it moments later.
+Two-phase, because a gradbot session is split across two requests: it only really
+begins when the browser opens the WebSocket. So `/start-session` mints a session
+id and *reserves* it, and the socket *claims* it moments later.
 
 That reservation is also what stops a client from choosing its own session id —
 which would otherwise let it collide with, or impersonate, someone else's row.
 Only ids this server minted can be claimed, and only once.
 
-Unlike sceance there is no `asyncio.Task` to cancel on shutdown: a session *is*
-its WebSocket handler, and those close on their own when the server stops.
+There is no background task to cancel on shutdown: a session *is* its WebSocket
+handler, and those close on their own when the server stops.
 """
 
 from __future__ import annotations

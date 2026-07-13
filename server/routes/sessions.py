@@ -1,8 +1,7 @@
 """Session routes: reserve a slot over HTTP, then run the call over a WebSocket.
 
-Sceance does this in one request — `/start-session` creates a Daily room and
-spawns the bot task, and the browser just joins the room. Gradbot has no room and
-no bot task: the session *is* the WebSocket, so the work splits in two.
+A gradbot session has no room to join and no bot process to spawn: the session
+*is* the WebSocket. So the work splits in two.
 
     POST /start-session  -> auth, persona, capacity check; reserves a session id
     WS   /ws/chat        -> browser sends {type:'start', session_id, access_token}

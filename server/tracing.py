@@ -1,21 +1,19 @@
-"""Translate gradbot's `MsgOut` stream into the shared tracing schema.
+"""Translate gradbot's `MsgOut` stream into the tracing schema.
 
-This app records calls but never reads them back — it has no dashboard. Sessions
-are monitored from sceance, which reads the same database. That makes this module
-a **contract with code in another repo**, and the only thing holding it up.
+This app records calls but never reads them back — it has no dashboard. Whatever
+you point at the database is the consumer, which makes this module **an API with
+no local consumer**, and the schema below its contract.
 
-Sceance's session pages are built on a handful of well-known `events.kind`
-strings and `metrics.processor` names: `response_latency`, for instance, is
-derived purely from the gap between a `user_stopped_speaking` event and the next
-`bot_started_speaking`, and TTFB is grouped by `processor`. Emit that vocabulary
-from gradbot's very different event stream and every chart, table and transcript
-over there keeps working.
+Two names carry the weight. `user_stopped_speaking` and `bot_started_speaking`
+bracket the silence a caller actually sits through — the perceived latency of a
+turn is the gap between them, and nothing else records it. `metrics.processor`
+names the pipeline stage, and is what a dashboard groups time-to-first-byte by.
 
-Rename a `kind` here and a panel goes blank over there. Silently — nothing in
-this repo will fail. `tests/test_tracing.py` pins the exact strings for that
-reason; treat them as an API, not as local names.
+Rename a `kind` here and nothing in this repo fails: every test still passes,
+while a panel somewhere else quietly goes blank. `tests/test_tracing.py` pins the
+exact strings for that reason. Treat them as a public interface, not local names.
 
-    gradbot MsgOut            ->  sceance schema
+    gradbot MsgOut            ->  what gets written
     ─────────────────────────────────────────────────────────────────────
     stt_text                  ->  messages(role='user') + events(transcription)
     tts_text                  ->  messages(role='assistant') + metrics(tts_usage)
@@ -30,7 +28,7 @@ reason; treat them as an API, not as local names.
 
 Deliberately NOT emitted: `llm_usage` rows. Gradbot's Rust core calls the LLM
 itself and never surfaces token counts, so `sessions.total_*_tokens` stay 0 for
-this app, and sceance's token panels will read zero for its sessions.
+this app, and any token panel reading them will show zero.
 
 Timestamps come from the local clock at message arrival, NOT from gradbot's own
 timing fields — those turned out to be unusable. See `SessionTracer._ts`.
@@ -46,8 +44,8 @@ import time
 
 from loguru import logger
 
-# Stable names for the pipeline stages. Sceance's dashboard groups TTFB rows BY
-# processor, so these strings are what the operator actually reads there.
+# Stable names for the pipeline stages. A dashboard groups TTFB rows BY processor,
+# so these strings are what an operator actually reads.
 LLM_PROCESSOR = "GradbotLLM"
 TTS_PROCESSOR = "GradiumTTS"
 

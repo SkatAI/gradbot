@@ -5,9 +5,8 @@ services read it via `get_settings()` at call time, so values aren't frozen at
 import and tests can override the whole object in one place (`set_settings`) or
 patch a single attribute on `get_settings()`.
 
-Trimmed from the sceance original: this app has no Daily transport and only ever
-talks to Gradium (STT + TTS) and an OpenAI-compatible LLM endpoint, so the
-Daily/Deepgram/Cartesia/Anthropic/Groq keys are gone.
+The app only ever talks to Gradium (both STT and TTS) and one OpenAI-compatible
+LLM endpoint, so those are the only provider keys here.
 """
 
 from __future__ import annotations

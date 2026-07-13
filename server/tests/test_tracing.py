@@ -1,10 +1,12 @@
-"""The MsgOut -> Supabase mapping.
+"""The MsgOut -> Postgres mapping.
 
-These assertions are load-bearing beyond this repo: sceance's dashboard derives
-`response_latency` from the gap between `user_stopped_speaking` and
-`bot_started_speaking`, and groups TTFB by `metrics.processor`. If a rename here
-goes unnoticed, a panel over there quietly goes blank rather than erroring. So
-the tests pin the exact strings, not just "an event was written".
+These assertions are load-bearing *outside* this repo. This app has no dashboard:
+it writes traces and never reads them back, so nothing here would fail if a
+`kind` string were renamed — whatever consumes the traces would just quietly go
+blank. Perceived latency is derived from the gap between `user_stopped_speaking`
+and `bot_started_speaking`, and TTFB is grouped by `metrics.processor`.
+
+So these tests pin the exact strings, not just "an event was written".
 """
 
 from __future__ import annotations
@@ -147,9 +149,9 @@ def test_close_flushes_a_half_finished_turn():
     assert {m["role"] for m in rec.messages} == {"user", "assistant"}
 
 
-# ---- the event vocabulary the dashboard reads ----------------------------
+# ---- the event vocabulary a consumer reads --------------------------------
 
-def test_full_turn_emits_the_kinds_the_dashboard_expects():
+def test_full_turn_emits_the_expected_kinds():
     rec = FakeRecorder()
     t = tracer(rec)
     for kind in ("flushing", "push_to_llm", "first_word", "first_tts_audio", "end_tts_audio"):
@@ -262,7 +264,7 @@ def test_ttfb_is_never_zero_for_a_turn_that_actually_took_time():
 def test_no_llm_usage_rows_are_ever_written():
     # v1 records no token counts — gradbot's Rust core never surfaces them. If
     # this ever starts failing, sessions.total_*_tokens can stop being zero and
-    # sceance can stop pinning the LLM stage and infer it from token rows again.
+    # a consumer could infer the LLM stage from token rows instead of the name.
     rec = FakeRecorder()
     t = tracer(rec)
     t.on_msg(event("push_to_llm"))

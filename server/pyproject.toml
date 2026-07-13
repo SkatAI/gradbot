@@ -1,7 +1,7 @@
 [project]
 name = "gradbot-voice"
 version = "0.1.0"
-description = "Voice agent on the gradbot framework — a twin of sceance for head-to-head comparison"
+description = "A browser voice agent on the gradbot framework"
 # gradbot requires >=3.12 (it ships cp312/cp313/cp314 wheels only).
 requires-python = ">=3.12"
 dependencies = [

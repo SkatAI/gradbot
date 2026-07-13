@@ -1,8 +1,7 @@
-# DigitalOcean App Platform — the gradbot twin.
+# DigitalOcean App Platform.
 #
-# Separate app from sceance, but the SAME Supabase project: both write to one
-# database and are told apart by sessions.framework. Set the SUPABASE_* secrets
-# in the App Platform UI to the same values sceance uses.
+# Deploys on push to `production`. Set the secrets in the App Platform UI — they
+# are the same values as server/.env; see server/.env.template for what each is.
 name: gradbot-voice
 region: nyc
 
@@ -26,7 +25,7 @@ services:
         value: "5"
       - key: GRADIUM_API_KEY
         type: SECRET
-      - key: OPENAI_API_KEY
-        type: SECRET
       - key: OPENROUTER_API_KEY
         type: SECRET
+      # Supabase: set SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_ROLE_KEY and
+      # SUPABASE_DB_URL here as SECRETs too.

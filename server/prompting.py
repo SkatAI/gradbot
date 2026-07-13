@@ -1,10 +1,9 @@
 """System-instruction assembly and output-language policy.
 
 Gradbot's `SessionConfig` has exactly one text field — `instructions`. There is
-no context-seeding API (sceance's `opening_messages`) and no way to speak a fixed
-line without the LLM (sceance's `static_greeting`). So everything the agent needs
-to know, including how to open the conversation, has to be assembled into that
-one string. That's what this module does.
+no way to seed prior context and no way to speak a fixed line without the LLM.
+So everything the agent needs to know, including how to open the conversation,
+has to be assembled into that one string. That's what this module does.
 
 Kept separate from `agent.py` (which builds the gradbot objects) so the prompt
 policy can be unit-tested without importing gradbot.
@@ -47,11 +46,11 @@ def _language_directive(lang: str) -> str:
 def _first_turn_directive(greeting: str) -> str:
     """Tell the agent how to open.
 
-    In sceance the opening was a `static_greeting` spoken straight to TTS — no
-    LLM call, so no cold-start dead air. Gradbot cannot do that (there is no
-    speak-this-text API), so the agent opens with a real generated turn and we
-    ask it to say the line verbatim. Whether it complies, and what that first
-    turn costs in latency, is one of the things this app exists to measure.
+    Gradbot has no speak-this-text API, so the agent cannot simply be handed a
+    canned opening to read: it has to *generate* turn zero. We therefore ask it
+    to say the greeting verbatim, and pay a real LLM call (a second or two) for
+    the privilege. Whether the model complies with 'word for word' is not
+    guaranteed — check the transcript if the greeting starts drifting.
     """
     return (
         f"\n\n— First turn —\n"

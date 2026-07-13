@@ -101,8 +101,8 @@ async def insert_metrics(pool: asyncpg.Pool, rows: Iterable[dict]) -> None:
     await _insert_rows(pool, "metrics", METRIC_COLUMNS, rows)
 
 
-# This app shares its database with sceance (the Pipecat build), so every row it
-# writes is tagged so the two can be told apart. See migrations/007_framework.sql.
+# Tags every session row with the stack that recorded it, so more than one voice
+# framework can share a single analytics database and still be told apart.
 FRAMEWORK = "gradbot"
 
 
