@@ -9,7 +9,7 @@ Persona JSON is nested by concern:
                    "greeting" },
       "llm":     { "provider", "model", "base_url"?, "description"? },
       "tts":     { "provider", "voice_id", "voice_name"?, "voice_description"? },
-      "stt":     { "provider" },
+      "stt":     { "provider", "extra"? },   # extra: opaque, passed to Gradium
       "gradbot": { "silence_timeout_s"?, "flush_duration_s"?,
                    "padding_bonus"?, "assistant_speaks_first"? }
     }
@@ -25,7 +25,10 @@ The schema is deliberately narrow, and every omission is forced by gradbot:
   send_audio / send_config / close. The opening turn is LLM-generated, so the
   greeting is folded into the system instruction instead (see `prompting.py`).
 - No `agent.memory`. Cross-session memory doesn't exist in this app.
-- No TTS speed or STT model knobs. Gradbot exposes neither.
+- No TTS speed knob, and no STT *model* knob. Gradbot exposes neither; the STT
+  model is whatever `GRADIUM_STT_MODEL_NAME` says in the environment (unset =
+  Gradium's "default"), read by the Rust core, not by us. What `stt.extra` does
+  reach is Gradium's per-stream tuning — see `STTConfig`.
 - `llm.provider` must be OpenAI-compatible; it resolves to an api-key + base-url
   pair (see `LLM_PROVIDERS`), because gradbot speaks nothing else.
 
@@ -204,6 +207,24 @@ class TTSConfig:
 @dataclass(frozen=True)
 class STTConfig:
     provider: str
+    # Tuning knobs for Gradium's STT model itself (`delay_in_frames`, `temp`, …).
+    # Gradbot has no opinion about these: `SessionConfig.stt_extra_config` is a
+    # JSON *string* that its Rust core merges, key by key, into the `json_config`
+    # of the Setup message it sends Gradium (`speech_to_text.rs`). It never names
+    # a single one of them. So this is an opaque passthrough to a remote server:
+    # a key that Gradium doesn't recognise fails at call time, not at load time
+    # — the same trap as an `llm.model` that the provider has retired.
+    #
+    # Two hazards, both from reading that Rust, both guarded below:
+    #
+    #  - The merge is `if let Ok(Value::Object(map)) = serde_json::from_str(extra)`.
+    #    Malformed JSON is *silently ignored* — no error, no log line, the knob
+    #    simply does nothing. That is why this holds a dict which `agent.py`
+    #    serialises, rather than a string a persona hand-writes: a typo becomes a
+    #    load-time PersonaError instead of a config that quietly evaporates.
+    #  - The merge is `config.extend(map)`, so these keys *overwrite* gradbot's
+    #    own. `language` is the one gradbot puts there, from `agent.lang`.
+    extra: dict
 
     @classmethod
     def from_section(cls, stt: dict, id: str) -> "STTConfig":
@@ -213,7 +234,19 @@ class STTConfig:
                 f"persona {id!r}: 'stt.provider' must be 'gradium' — gradbot has "
                 f"no other STT backend, got {provider!r}"
             )
-        return cls(provider=provider)
+        extra = stt.get("extra")
+        if extra is None:
+            extra = {}
+        if not isinstance(extra, dict):
+            raise PersonaError(
+                f"persona {id!r}: 'stt.extra' must be a JSON object, got {extra!r}"
+            )
+        if "language" in extra:
+            raise PersonaError(
+                f"persona {id!r}: 'stt.extra' must not set 'language' — gradbot "
+                f"derives it from 'agent.lang' and this would silently override it"
+            )
+        return cls(provider=provider, extra=extra)
 
 
 @dataclass(frozen=True)
@@ -242,15 +275,35 @@ class GradbotConfig:
         # 0.0 disables the branch outright (it is guarded by `> 0.0`).
         silence_timeout_s = _number(gb.get("silence_timeout_s"), 0.0, "gradbot",
                                     "silence_timeout_s", id)
-        # How much silence ends the user's turn — and therefore when
-        # `user_stopped_speaking` fires, which starts the response-latency
-        # stopwatch. Default 0.2, not gradbot's own 0.5: this is the value most
-        # VAD-based stacks use, so traces stay comparable with them. Raise it and
-        # the agent waits longer before answering; every latency figure grows with
-        # it, which is easy to mistake for the pipeline getting slower.
+        # The grace period, after Gradium raises end-of-turn, during which late
+        # STT text still joins the current turn. In gradbot's `multiplex.rs` the
+        # turn commits when `stt_time - since_s > flush_duration_s`, at which
+        # point `texts.join(" ")` is pushed to the LLM — and until then, `on_text`
+        # keeps appending (`State::Flushing { texts, .. } => texts.push(text)`).
+        # So this is *how long we let STT drain its buffer*, not merely a VAD
+        # hangover. It is also when `user_stopped_speaking` fires, which starts
+        # the response-latency stopwatch: raise it and every latency figure in the
+        # traces grows with it, which is easy to mistake for the pipeline slowing
+        # down.
+        #
+        # This was 0.2 — chosen to match what most VAD stacks use, so traces
+        # stayed comparable with them. That was the wrong trade and it made the
+        # agent hard of hearing. Gradium emits text with real lookahead lag
+        # (`INPUT_FRAME_SIZE` is 1920 samples at 24kHz = 80ms/frame, and its
+        # `delay_in_frames` defaults to 16 — on the order of a second), so a 0.2s
+        # window closed the turn while words were still in flight. They landed in
+        # the *next* turn: "I'm going" went to the LLM, then "to be" arrived and
+        # was answered as its own utterance. The agent caught the head of every
+        # sentence and missed the tail.
+        #
+        # 0.5 is gradbot's own default (`DEFAULT_FLUSH_FOR_S`); both personas ship
+        # 0.6. If you lower it, re-read the log for `Flushing { text_chunks: 1 }`
+        # on utterances that were plainly longer than one chunk — that is the
+        # signature of this bug returning. Comparable traces are not worth an
+        # agent that cannot hear.
         return cls(
             silence_timeout_s=silence_timeout_s,
-            flush_duration_s=_number(gb.get("flush_duration_s"), 0.2, "gradbot",
+            flush_duration_s=_number(gb.get("flush_duration_s"), 0.5, "gradbot",
                                      "flush_duration_s", id),
             padding_bonus=_number(gb.get("padding_bonus"), 0.0, "gradbot",
                                   "padding_bonus", id),

@@ -7,6 +7,8 @@ without the native extension, which has no macOS x86_64 wheel.
 
 from __future__ import annotations
 
+import json
+
 import gradbot
 
 from personas import LLM_PROVIDERS, Persona, PersonaError
@@ -29,6 +31,13 @@ def build_session_config(persona: Persona) -> gradbot.SessionConfig:
         silence_timeout_s=persona.gradbot.silence_timeout_s,
         flush_duration_s=persona.gradbot.flush_duration_s,
         padding_bonus=persona.gradbot.padding_bonus,
+        # Gradium's own STT knobs (`delay_in_frames`, `temp`, …), which gradbot
+        # forwards verbatim into the Setup message's `json_config` without knowing
+        # what any of them mean. It wants a JSON string; `personas.py` validated
+        # the dict, so this cannot be the malformed JSON that gradbot would
+        # silently discard. `None` when empty, so we send nothing at all rather
+        # than an empty object.
+        stt_extra_config=json.dumps(persona.stt.extra) if persona.stt.extra else None,
         # No tools. Gradbot supports them; neither persona defines any.
         tools=[],
     )

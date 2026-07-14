@@ -86,11 +86,29 @@ def test_the_openai_provider_means_openais_own_endpoint():
     assert persona.llm.base_url is None
 
 
+@pytest.mark.parametrize("name", PORTED)
+def test_flush_window_is_long_enough_for_stt_to_drain(name):
+    # This was 0.2, and it made the agent hard of hearing. `flush_duration_s` is
+    # how long late STT text may still join the current turn (multiplex.rs commits
+    # the turn once `stt_time - since_s > flush_duration_s`). Gradium emits text
+    # with ~1s of lookahead lag, so a 0.2s window closed the turn mid-utterance:
+    # "I'm going" went to the LLM, then "to be" arrived and was answered as a
+    # separate turn. Never take this back below gradbot's own 0.5 default without
+    # re-reading the tail of a real call.
+    assert load_persona(name).gradbot.flush_duration_s >= 0.5
+
+
 # ---- schema validation ----------------------------------------------------
 
 def test_gradbot_defaults_silence_timeout_to_zero_not_five():
     persona = Persona.from_dict(minimal(), id="t")
     assert persona.gradbot.silence_timeout_s == 0.0
+
+
+def test_gradbot_defaults_the_flush_window_to_gradbots_own_value():
+    # A persona that omits the knob must not inherit the truncating 0.2.
+    persona = Persona.from_dict(minimal(), id="t")
+    assert persona.gradbot.flush_duration_s == 0.5
 
 
 def test_non_openai_compatible_llm_is_rejected():
@@ -104,6 +122,37 @@ def test_non_openai_compatible_llm_is_rejected():
 def test_non_gradium_speech_providers_are_rejected(provider):
     with pytest.raises(PersonaError, match="gradium"):
         Persona.from_dict(minimal(tts={"provider": provider}), id="t")
+
+
+# ---- stt.extra: an opaque passthrough to Gradium --------------------------
+
+def test_stt_extra_defaults_to_empty_so_we_send_gradium_nothing():
+    assert Persona.from_dict(minimal(), id="t").stt.extra == {}
+
+
+def test_stt_extra_survives_as_a_dict():
+    persona = Persona.from_dict(
+        minimal(stt={"provider": "gradium", "extra": {"delay_in_frames": 24}}), id="t"
+    )
+    assert persona.stt.extra == {"delay_in_frames": 24}
+
+
+@pytest.mark.parametrize("bad", ['{"delay_in_frames": 24}', 16, ["a"]])
+def test_stt_extra_must_be_an_object_not_a_hand_written_string(bad):
+    # gradbot merges this with `if let Ok(Value::Object(map)) = from_str(extra)`:
+    # anything that isn't a JSON object is discarded in silence, with no error and
+    # no log line. Reject it at load time, or the knob quietly does nothing.
+    with pytest.raises(PersonaError, match="stt.extra"):
+        Persona.from_dict(minimal(stt={"provider": "gradium", "extra": bad}), id="t")
+
+
+def test_stt_extra_may_not_smuggle_in_a_language():
+    # The merge is `config.extend(map)`, so these keys overwrite gradbot's own —
+    # and `language`, derived from agent.lang, is the one key gradbot puts there.
+    with pytest.raises(PersonaError, match="language"):
+        Persona.from_dict(
+            minimal(stt={"provider": "gradium", "extra": {"language": "de"}}), id="t"
+        )
 
 
 def test_unsupported_language_is_rejected_rather_than_silently_englished():
