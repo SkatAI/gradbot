@@ -53,6 +53,46 @@ h1 {
   margin-top: 0.5rem;
 }
 
+/* One flex item in `main` where there used to be three, so it restates main's own
+   gap to keep the spacing it had before it was wrapped. */
+.signed-in-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Flows after the content rather than being pinned to the viewport bottom: `main`
+   is a centred flex column, and `margin-top: auto` here would absorb all the free
+   space and top-align the whole page. */
+.site-footer {
+  border-top: 1px solid #262a35;
+  padding-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Consent, not fine print: someone agreeing to be recorded should not have to
+   hunt for the sentence that says so. Hence the accent rule and the step up in
+   size against .note around it. */
+.recording-notice {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.recording-notice strong { color: var(--accent); }
+
+.site-footer .note { margin-top: 0; }
+.site-footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.site-footer a:hover { color: var(--text); }
+.site-footer .sep { margin: 0 0.4rem; opacity: 0.5; }
+
 button {
   appearance: none;
   border: 0;

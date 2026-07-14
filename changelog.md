@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-07-14 — Landing page
+
+- **A recording notice, shown to signed-in callers.** "Everything you say is
+  recorded in our database", styled as a callout rather than fine print —
+  someone consenting to being recorded should not have to hunt for the sentence
+  that says so. Alongside it: a demo caveat, a contact address, and a link to
+  the repo.
+- **The block is gated on being signed in.** It lives in `#signed-in-info`,
+  toggled by `renderAuthState()` in step with `#agents`, so the sign-in form and
+  the waitlist page stay clean — and the notice cannot drift out of sync with
+  the agent list it applies to.
+- Retitled "Gradbot voice" to "Gradbot, a demo".
+
 ## 2026-07-14 — Deploy config
 
 - **`.do/app.yaml` declares every variable the app reads.** The four Supabase

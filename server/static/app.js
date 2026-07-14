@@ -14,6 +14,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const agentsEl = document.getElementById("agents");
+const signedInInfoEl = document.getElementById("signed-in-info");
 const hangupBtn = document.getElementById("hangup-btn");
 const statusEl = document.getElementById("status");
 
@@ -316,11 +317,13 @@ function renderAuthState(me) {
     authLoggedIn.classList.remove("hidden");
     authUsernameEl.textContent = me.username;
     agentsEl.classList.remove("hidden");
+    signedInInfoEl.classList.remove("hidden");
     loadAgents();
   } else {
     authForm.classList.remove("hidden");
     authLoggedIn.classList.add("hidden");
     agentsEl.classList.add("hidden");
+    signedInInfoEl.classList.add("hidden");
     setAuthStatus("");
   }
 }
