@@ -8,7 +8,7 @@ import pytest
 
 from personas import Persona, PersonaError, load_persona
 
-PORTED = ("yarden_mini", "inigo_v5_fr")
+PORTED = ("sophie_en", "leo_fr")
 
 
 def minimal(**overrides) -> dict:

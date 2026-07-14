@@ -9,35 +9,35 @@ from prompting import build_system_instruction
 def test_greeting_is_carried_into_the_instructions():
     # Gradbot has no way to seed context messages or speak a canned line, so the
     # opening has to ride inside the system prompt or it doesn't happen at all.
-    persona = load_persona("yarden_mini")
+    persona = load_persona("sophie_en")
     instruction = build_system_instruction(persona)
     assert persona.greeting in instruction
     assert "You speak first" in instruction
 
 
 def test_persona_prompt_comes_first():
-    persona = load_persona("yarden_mini")
+    persona = load_persona("sophie_en")
     instruction = build_system_instruction(persona)
     assert instruction.startswith(persona.system_prompt)
 
 
 def test_language_is_pinned_to_the_personas_language():
-    fr = build_system_instruction(load_persona("inigo_v5_fr"))
+    fr = build_system_instruction(load_persona("leo_fr"))
     assert "Always speak French" in fr
 
-    en = build_system_instruction(load_persona("yarden_mini"))
+    en = build_system_instruction(load_persona("sophie_en"))
     assert "Always speak English" in en
 
 
 def test_no_memory_brief_promise():
     # This app has no cross-session memory. Promising the agent a "memory brief"
     # it will never receive just makes it talk about context it doesn't have.
-    instruction = build_system_instruction(load_persona("yarden_mini"))
+    instruction = build_system_instruction(load_persona("sophie_en"))
     assert "memory brief" not in instruction.lower()
 
 
 def test_voice_rules_forbid_unspeakable_formatting():
-    instruction = build_system_instruction(load_persona("yarden_mini"))
+    instruction = build_system_instruction(load_persona("sophie_en"))
     assert "markdown" in instruction.lower()
 
 

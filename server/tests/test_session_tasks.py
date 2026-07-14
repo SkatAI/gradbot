@@ -12,18 +12,18 @@ import session_tasks
 def test_reservation_holds_a_slot_before_the_socket_connects():
     # Otherwise MAX_SESSIONS could be blown through by N clients that have all
     # POSTed but not yet dialled.
-    session_tasks.reserve("yarden_mini", "user-1")
+    session_tasks.reserve("sophie_en", "user-1")
     assert session_tasks.count() == 1
 
 
 def test_claiming_promotes_the_slot_without_ever_releasing_it():
-    r = session_tasks.reserve("yarden_mini", "user-1")
+    r = session_tasks.reserve("sophie_en", "user-1")
     assert session_tasks.count() == 1
 
     claimed = session_tasks.claim(str(r.session_id))
 
     assert claimed is not None
-    assert claimed.agent == "yarden_mini"
+    assert claimed.agent == "sophie_en"
     assert claimed.user_id == "user-1"
     # The slot moved reserved -> active. If count() dipped to 0 here, a burst of
     # connects could slip past the capacity check.
@@ -31,14 +31,14 @@ def test_claiming_promotes_the_slot_without_ever_releasing_it():
 
 
 def test_releasing_frees_the_slot():
-    r = session_tasks.reserve("yarden_mini", "user-1")
+    r = session_tasks.reserve("sophie_en", "user-1")
     session_tasks.claim(str(r.session_id))
     session_tasks.release(str(r.session_id))
     assert session_tasks.count() == 0
 
 
 def test_a_session_id_cannot_be_claimed_twice():
-    r = session_tasks.reserve("yarden_mini", "user-1")
+    r = session_tasks.reserve("sophie_en", "user-1")
     assert session_tasks.claim(str(r.session_id)) is not None
     assert session_tasks.claim(str(r.session_id)) is None
 
@@ -52,7 +52,7 @@ def test_an_unminted_session_id_cannot_be_claimed():
 def test_abandoned_reservations_expire_instead_of_leaking_a_slot():
     # The browser closed the tab between POST and WebSocket. Without a TTL that
     # slot is gone until restart.
-    r = session_tasks.reserve("yarden_mini", "user-1")
+    r = session_tasks.reserve("sophie_en", "user-1")
     assert session_tasks.count() == 1
 
     session_tasks._reserved[str(r.session_id)] = session_tasks.Reservation(
@@ -67,7 +67,7 @@ def test_abandoned_reservations_expire_instead_of_leaking_a_slot():
 
 
 def test_each_reservation_gets_its_own_id():
-    a = session_tasks.reserve("yarden_mini", "user-1")
-    b = session_tasks.reserve("yarden_mini", "user-1")
+    a = session_tasks.reserve("sophie_en", "user-1")
+    b = session_tasks.reserve("sophie_en", "user-1")
     assert a.session_id != b.session_id
     assert session_tasks.count() == 2

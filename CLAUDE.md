@@ -120,8 +120,8 @@ JSON in `personas/`, one file each, the source of truth. There is no persona CRU
 
 | | lang | voice (Gradium) | LLM |
 |---|---|---|---|
-| `yarden_mini` — Sophie | en | `P4GqVY98hjQSvkiu` Capucine | OpenRouter `meta-llama/llama-4-maverick` |
-| `inigo_v5_fr` — Léo | fr | `7HhpTMy55D4HkXen` Vianney | OpenRouter `meta-llama/llama-4-maverick` |
+| `sophie_en` — Sophie | en | `P4GqVY98hjQSvkiu` Capucine | OpenRouter `meta-llama/llama-4-maverick` |
+| `leo_fr` — Léo | fr | `7HhpTMy55D4HkXen` Vianney | OpenRouter `meta-llama/llama-4-maverick` |
 
 `llm.provider` **must be OpenAI-compatible** — gradbot speaks that wire protocol
 and nothing else. A provider resolves to an API key plus a base URL
