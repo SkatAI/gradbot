@@ -11,7 +11,7 @@ services:
     source_dir: /
     github:
       repo: SkatAI/gradbot
-      branch: production
+      branch: main
       deploy_on_push: true
     http_port: 8282
     instance_count: 1
