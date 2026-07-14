@@ -128,4 +128,12 @@ def test_voice_id_is_required():
 def test_public_card_never_leaks_the_system_prompt():
     card = Persona.from_dict(minimal(), id="t").public()
     assert "be helpful" not in repr(card)
-    assert card["memory"] is False  # this app has none
+
+
+def test_public_card_carries_what_the_agent_card_renders():
+    # The browser renders Model / STT & TTS / Voice / Lang from exactly these keys.
+    # Drop one and the card silently loses a row, with nothing else failing.
+    card = Persona.from_dict(minimal(), id="t").public()
+    assert {"llm", "stt_provider", "tts_provider", "voice_name", "lang"} <= card.keys()
+    assert card["stt_provider"] == "gradium"
+    assert card["tts_provider"] == "gradium"

@@ -61,8 +61,14 @@ function talkLabel(agent) {
     : "Let's talk";
 }
 
+// Provider ids arrive lowercase ("gradium"); the card shows them as names.
+function titleCase(s) {
+  const v = String(s || "");
+  return v.charAt(0).toUpperCase() + v.slice(1);
+}
+
 function setAgentButtonsDisabled(disabled) {
-  agentsEl.querySelectorAll("button").forEach((b) => { b.disabled = disabled; });
+  agentsEl.querySelectorAll(".talk-btn").forEach((b) => { b.disabled = disabled; });
 }
 
 async function loadAgents() {
@@ -111,9 +117,19 @@ function renderAgents(agents) {
 
     const rows = [];
     if (agent.llm) rows.push(["Model", agent.llm]);
-    if (agent.tts_provider) rows.push(["TTS", agent.tts_provider]);
+    // Gradbot has no other speech backend, so these are always the same provider
+    // — but read them rather than hardcoding "Gradium", so the card can't lie if
+    // that ever stops being true.
+    const speech = [agent.stt_provider, agent.tts_provider].filter(Boolean);
+    if (speech.length === 2 && speech[0] === speech[1]) {
+      rows.push(["STT & TTS", titleCase(speech[0])]);
+    } else {
+      if (agent.stt_provider) rows.push(["STT", titleCase(agent.stt_provider)]);
+      if (agent.tts_provider) rows.push(["TTS", titleCase(agent.tts_provider)]);
+    }
+    if (agent.voice_name) rows.push(["Voice", agent.voice_name]);
     if (agent.lang) rows.push(["Lang", String(agent.lang).toUpperCase()]);
-    rows.push(["Memory", agent.memory === false ? "off" : "on"]);
+
     if (rows.length) {
       const meta = document.createElement("dl");
       meta.className = "agent-meta";

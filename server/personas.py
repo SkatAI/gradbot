@@ -337,12 +337,10 @@ class Persona:
             "name": self.name,
             "description": self.description,
             "lang": self.lang,
-            # The agent card in the browser reads this;
-            # this app has no memory, so it is always false.
-            "memory": False,
             "voice_name": self.tts.voice_name,
             "voice_description": self.tts.voice_description,
             "llm": self.llm.description,
+            "stt_provider": self.stt.provider,
             "tts_provider": self.tts.provider,
         }
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-14 — Agent cards, and Léo's opening
+
+- **The agent card shows what it is made of**: Model, STT & TTS, Voice, Lang.
+  Read from the persona rather than hardcoded, so a card cannot claim a provider
+  it does not use.
+- **`Memory` is gone from the card**, and from `Persona.public()`. This app has
+  no cross-session memory, so the row only ever read "off".
+- **Léo's `## OUVERTURE` now matches his `greeting`.** The two had drifted — the
+  prompt still carried the old vouvoiement opening while the JSON greeting had
+  moved to tutoiement and asks for a first name. His description credits Ignace
+  de Loyola.
+
 ## 2026-07-14 — Landing page
 
 - **A recording notice, shown to signed-in callers.** "Everything you say is

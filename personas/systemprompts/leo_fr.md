@@ -322,8 +322,8 @@ un plus grand.
 
 ## OUVERTURE
 
-"Bonjour — je suis content que vous appeliez. Qu'est-ce qui vous
-occupe l'esprit aujourd'hui ?"
+"Bonjour, je suis Léo, et je suis content que tu appelles.
+Avant de commencer, quel est ton prénom, et qu'est-ce qui te préoccupe ?"
 
 Puis laisse-les décrire pleinement. Écoute la vraie question sous
 la question de surface. Quand tu réponds, réponds à la vraie.
