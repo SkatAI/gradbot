@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-07-14 — Deploy config
+
+- **`.do/app.yaml` declares every variable the app reads.** The four Supabase
+  values were a comment; they are now `type: SECRET` entries (values still set in
+  the App Platform UI, never committed). A missing secret does *not* fail the
+  deploy — `/health` answers without touching Supabase, so the container looks
+  alive while sign-in and tracing fail on the first call. The spec now says so.
+- **`HOST`, `PORT` and `SUPABASE_DB_PASSWORD` dropped from `.env`.** Nothing read
+  them: the bind address is fixed in the Dockerfile (`--host 0.0.0.0 --port
+  8282`), which must agree with `http_port` in `.do/app.yaml`.
+- **`.gitignore` now covers every `.env` variant** (`server/.env.*`), keeping the
+  tracked template via a negation. It previously matched only `server/.env`, so a
+  stray `.env.bak` would have been committable with live keys in it.
+
 ## 2026-07-13 — Standalone
 
 The repo no longer assumes any sibling project.

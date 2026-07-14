@@ -1,6 +1,10 @@
 .venv/
 __pycache__/
 *.pyc
+# Every .env variant is secret-bearing — except the template, which is the
+# tracked documentation of what goes in them.
 server/.env
+server/.env.*
+!server/.env.template
 .pytest_cache/
 logs/

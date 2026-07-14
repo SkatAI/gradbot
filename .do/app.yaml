@@ -18,14 +18,35 @@ services:
     instance_size_slug: basic-xxs
     health_check:
       http_path: /health
+    # Every variable the app reads is declared here. The ones marked SECRET have
+    # no value in the repo — set each one in the App Platform UI (Settings ->
+    # web -> Environment Variables). A missing SECRET does not fail the deploy:
+    # /health still answers and the container looks alive, while sign-in and
+    # tracing quietly fail. Check all six are set before the first call.
+    #
+    # OPEN_SIGNUP is deliberately absent: unset means invite-only, which is the
+    # behaviour we want deployed. OPENAI_API_KEY is unneeded while both personas
+    # run on OpenRouter.
     envs:
       - key: DEPLOY_ENV
         value: online
       - key: MAX_SESSIONS
         value: "5"
+
       - key: GRADIUM_API_KEY
         type: SECRET
       - key: OPENROUTER_API_KEY
         type: SECRET
-      # Supabase: set SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_ROLE_KEY and
-      # SUPABASE_DB_URL here as SECRETs too.
+
+      # Supabase. SUPABASE_URL and SUPABASE_KEY (the anon key) are not really
+      # secret — the app serves both to the browser from /api/config — but they
+      # are declared SECRET so no project-identifying value is committed here.
+      - key: SUPABASE_URL
+        type: SECRET
+      - key: SUPABASE_KEY
+        type: SECRET
+      # Server only. Bypasses every access rule; never reaches the browser.
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        type: SECRET
+      - key: SUPABASE_DB_URL
+        type: SECRET
