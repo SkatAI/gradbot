@@ -17,7 +17,7 @@ time-to-first-byte for each stage of the pipeline.
 
 | | |
 |---|---|
-| **Docker** | The app only runs in a container. Gradbot ships no macOS x86_64 wheel, so on an Intel Mac there is nowhere else it will even import. |
+| **Docker** | The app only runs in a container. |
 | **A Supabase project** | Free tier is fine. Postgres + the accounts system. |
 | **A Gradium API key** | [gradium.ai](https://gradium.ai) — one key covers both speech-to-text and text-to-speech. |
 | **An OpenRouter API key** | [openrouter.ai/keys](https://openrouter.ai/keys) — both shipped personas run on OpenRouter. |

@@ -227,10 +227,19 @@ class GradbotConfig:
 
     @classmethod
     def from_section(cls, gb: dict, id: str) -> "GradbotConfig":
-        # Default to 0.0, NOT gradbot's own 5.0. With a non-zero timeout the
-        # multiplexer re-prompts the agent with its own last message whenever the
-        # user goes quiet, so the agent talks to itself. Upstream's own skill docs
-        # say to always set this to 0.
+        # Default to 0.0, NOT gradbot's own 5.0.
+        #
+        # After `silence_timeout_s` of quiet, the Rust multiplexer injects the
+        # literal string "..." into the conversation *as a user turn* and runs a
+        # full LLM -> TTS cycle on it. The model, handed a contentless user turn,
+        # fills the silence: it re-asks its last question or elaborates on its last
+        # point. That is the "agent talks to itself" behaviour — it is answering a
+        # prompt nobody spoke. (Capped at 5 nudges; reset by real speech.)
+        #
+        # Reasonable for a shopkeeper NPC. Wrong for a discernment guide, where
+        # silence is the point. It also writes a spontaneous assistant turn with no
+        # preceding `user_stopped_speaking`, so nothing pairs and turn counts drift.
+        # 0.0 disables the branch outright (it is guarded by `> 0.0`).
         silence_timeout_s = _number(gb.get("silence_timeout_s"), 0.0, "gradbot",
                                     "silence_timeout_s", id)
         # How much silence ends the user's turn — and therefore when

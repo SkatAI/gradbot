@@ -9,11 +9,9 @@ the things that will bite you, and why the code is shaped the way it is.
 
 ## Non-negotiables
 
-### Run it in Docker. Always.
+### Run it in Docker.
 
-`gradbot` publishes macOS wheels for **arm64 only**. This machine is an Intel Mac
-with no Rust toolchain to build the sdist from source, so **`import gradbot`
-cannot work outside a linux/amd64 container**. `uv sync` on the host will fail.
+`gradbot` publishes macOS wheels for **arm64 only**. If your machine is an Intel Mac, it has no Rust toolchain to build the sdist from source, so **`import gradbot` cannot work outside a linux/amd64 container**. `uv sync` on the host will fail.
 
     make            # list every target
     make build      # after any change under server/*.py
@@ -46,9 +44,27 @@ order.
 
 ### `silence_timeout_s` must be `0.0`
 
-Gradbot defaults it to 5s, which makes the agent re-prompt itself with its own
-last message whenever the caller goes quiet — it talks to itself. Both personas
-pin it to zero and a test enforces it. Upstream's own skill docs say the same.
+Gradbot defaults it to **5 seconds**. After that much silence from the caller, the
+Rust core **injects the literal string `"..."` into the conversation as a user
+turn** and runs a full LLM → TTS cycle on it (`multiplex.rs`, the
+`silence_prompts` branch — the same trick it uses to open a call, where turn zero
+is `PushToLlm { user_text: "[start]" }`).
+
+The LLM then sees `…the conversation so far…, user: "..."` and does the only thing
+it can with a contentless user turn: it fills the silence. It re-asks its last
+question, or elaborates on its last point, or asks if you're still there. **That
+is what "talks to itself" means** — it is answering a prompt nobody spoke, with
+only its own previous words to work from. Capped at 5 consecutive nudges, reset
+the moment you actually say something.
+
+This is a deliberate liveness feature, and a sensible default for gradbot's demo
+agents (a haggling shopkeeper, an NPC). It is wrong for ours: Léo is a discernment
+guide, and **silence is the point** — you are supposed to sit and think. It also
+pollutes the traces, since each nudge writes a spontaneous assistant turn with no
+`user_stopped_speaking` before it, so nothing pairs and the turn counts drift.
+
+`0.0` disables the branch outright (it is guarded by `silence_timeout_s > 0.0`).
+Both personas pin it to zero and a test enforces it.
 
 ## Do not trust gradbot's timing fields. We measured them.
 

@@ -7,7 +7,7 @@
   "persona": {
     "name": "Leo",
     "description": "Un guide de discernement dans l'esprit de saint Ignace. Vous parlez, il écoute, vous avancez à votre rythme.",
-    "system_prompt_path": "personas/systemprompts/inigo_prompt_v4_fr.md",
+    "system_prompt_path": "personas/systemprompts/leo_fr.md",
     "greeting": "Bonjour, je suis Léo, et je suis content que tu appelles. Avant de commencer, quel est ton prénom, et qu'est-ce qui te préoccupe ?"
   },
   "llm": {
